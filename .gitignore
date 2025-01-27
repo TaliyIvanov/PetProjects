@@ -1,5 +1,9 @@
 # Исключить папку с данными
 CV/01.Classification_Images/data/
 
+# Исключить папку с данными
+CV/01.Classification_Images/test_pics/
+
 # Исключить виртуальное окружение
 CV/01.Classification_Images/CIenv/
+
