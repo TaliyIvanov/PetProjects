@@ -1,3 +1,4 @@
+# ComputerVision
 # Исключить папку с данными
 CV/01.Classification_Images/data/
 
@@ -7,3 +8,9 @@ CV/01.Classification_Images/test_pics/
 # Исключить виртуальное окружение
 CV/01.Classification_Images/CIenv/
 
+
+# Audio
+# Исключить папку с данными
+Audio/01.Talium_TTS/data/
+# Исключить виртуальное окружение
+Audio/01.Talium_TTS/TTSenv
