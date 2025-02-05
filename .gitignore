@@ -15,3 +15,6 @@ Audio/01.Talium_TTS/data/
 # Исключить виртуальное окружение
 Audio/01.Talium_TTS/TTSenv
 Audio/01.Talium_TTS/TTSenv310
+
+# Исключить папку с временными файлами модели для обучения
+Audio/01.Talium_TTS/run
