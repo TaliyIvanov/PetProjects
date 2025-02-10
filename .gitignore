@@ -15,6 +15,7 @@ Audio/01.Talium_TTS/data/
 # Исключить виртуальное окружение
 Audio/01.Talium_TTS/TTSenv
 Audio/01.Talium_TTS/TTSenv310
+Audio/02. DL in Audio HSE (ASR, TTS)/DLAvenv
 
 # Исключить папку с временными файлами модели для обучения
 Audio/01.Talium_TTS/run
