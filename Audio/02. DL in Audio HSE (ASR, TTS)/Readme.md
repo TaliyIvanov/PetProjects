@@ -23,4 +23,17 @@
 - Visualization of Nyquist-Shannon theorem
 - [In details about MelScale and MFCC](http://practicalcryptography.com/miscellaneous/machine-learning/guide-mel-frequency-cepstral-coefficients-mfccs/)
 - [Fourier Transfor for dummies (YouTube)](https://www.youtube.com/watch?v=spUNpyF58BY&t=1s&ab_channel=3Blue1Brown)
+- [FFT](https://en.wikipedia.org/wiki/Fast_Fourier_transform)
+- [torch.fft - docs](https://pytorch.org/docs/stable/fft.html)
+- [STFT](https://en.wikipedia.org/wiki/Short-time_Fourier_transform)
 
+### [Week 03] Automatic Speech Recognition part - I
+Первая часть по Автоматическому распознованию Речи. Основы ASR
+- [Lecture slides](https://docs.google.com/presentation/d/1cBXdNIbowwYNp42WhJmd1Pp85oeslOrKNmGyZa5HKBQ/edit?usp=sharing)
+- [Sequence Modeling With CTC](https://distill.pub/2017/ctc/), a blog post explaining and visualizing CTC loss;
+- [The original CTC Loss paper can be found here.](https://www.cs.toronto.edu/~graves/icml_2006.pdf)
+- [Groups, Depthwise, and Depthwise-Separable Convolution, a video explaining why depthwise separable convolutions are needed and what their advantages are over regular convolutions.](https://www.youtube.com/watch?v=vVaRhZXovbw)
+- [This tutorial from Torch shows how to use CTC Beam Search with language model support.](https://pytorch.org/audio/main/tutorials/asr_inference_with_ctc_decoder_tutorial.html)
+- [Recording in English with a brief explanation of the CTC Loss can be found here.](https://youtu.be/YuImUy6vPFs)
+- []()
+- []()
