@@ -27,7 +27,7 @@
 - [torch.fft - docs](https://pytorch.org/docs/stable/fft.html)
 - [STFT](https://en.wikipedia.org/wiki/Short-time_Fourier_transform)
 
-### [Week 03] Automatic Speech Recognition part - I
+### [Week 03 - Automatic Speech Recognition part - I](https://github.com/TaliyIvanov/dlafromHSE/tree/2024/week03)
 Первая часть по Автоматическому распознованию Речи. Основы ASR
 - [Lecture slides](https://docs.google.com/presentation/d/1cBXdNIbowwYNp42WhJmd1Pp85oeslOrKNmGyZa5HKBQ/edit?usp=sharing)
 - [Sequence Modeling With CTC](https://distill.pub/2017/ctc/), a blog post explaining and visualizing CTC loss;
@@ -37,3 +37,13 @@
 - [Recording in English with a brief explanation of the CTC Loss can be found here.](https://youtu.be/YuImUy6vPFs)
 - []()
 - []()
+
+### [Week 04 - Automatic Speech Recognition part - II] 
+Вторая часть по Автоматическому распознования речи. Рассказывали про декодеры + немного ЛЛМ.
+
+- [Начало семинара](https://youtu.be/4who1RG-kaA?t=8946)
+- [1] [NeMo docs](https://docs.nvidia.com/nemo-framework/user-guide/latest/nemotoolkit/asr/models.html#hybrid-transducer-ctc)
+- [2] [RNNT + LAS](https://arxiv.org/pdf/1908.10992)
+- [3] [CTC + LAS](https://arxiv.org/pdf/1609.06773)
+- [4] [Hybrid Rescoring 1](https://arxiv.org/pdf/2008.13093)
+- [5] [Hybrid Rescoring 2](https://arxiv.org/pdf/2101.11577)
