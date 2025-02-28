@@ -47,7 +47,10 @@ I will realize [DeepSpeech2](https://proceedings.mlr.press/v48/amodei16.pdf) on 
 # About DeepSpeech 2:
 - [Paper Deep Speech 2](https://proceedings.mlr.press/v48/amodei16.pdf)
 - [Deep Speech 2 | Lecture 75 (Part 3)](https://www.youtube.com/watch?v=OAJNSJSQn-w&ab_channel=MaziarRaissi)
-- []()
+- [Nvidia DeepSpeech2 doc](https://nvidia.github.io/OpenSeq2Seq/html/speech-recognition/deepspeech2.html)
+- [PyTorch implementation of "Deep Speech 2: End-to-End Speech Recognition in English and Mandarin" (ICML, 2016)](https://github.com/sooftware/deepspeech2)
+- [Implementation of DeepSpeech2 for PyTorch](https://github.com/SeanNaren/deepspeech.pytorch)
+
 # Data
 I think, first i will use ASR only in english language.
 
