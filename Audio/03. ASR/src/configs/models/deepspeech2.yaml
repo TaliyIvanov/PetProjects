@@ -1,0 +1,3 @@
+_target_: src.models.DeepSpeech2
+n_feats: 128 # заменить
+fc_hidden: 512 # заменить

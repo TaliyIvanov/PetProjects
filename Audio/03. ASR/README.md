@@ -159,3 +159,96 @@ This repository is based on a [PyTorch Project Template](https://github.com/Blin
 ### License
 
 [![License](https://img.shields.io/badge/license-MIT-blue.svg)](/LICENSE)
+
+
+# Состав проекта
+
+```
+ASR_Project/
+├── ASRvenv/                        # Виртуальное окружение проекта
+├── data/                           # Хранилище данных для обучения
+├── notebooks/                      # Ноутбуки для разведочного анализа/иных целей
+│   ├── notebookforreserch.ipynb        # ноутбук для разведочного анализа данных
+├── scripts/                        # Скрипты
+│   ├── deepspeech2_inference.py        # инференс deepspeech2
+│   ├── deepspeech2_train.py            # тренировка deepspeech2
+│   ├── inference.py                    # скрипт инференса (предсказаний) обученной модели ASR
+│   ├── train.py                        # скрипт обучения модели
+├── src/                            # 
+│   ├── configs                         # 
+│      ├── dataloader                       # Конфигурация DataLoader для загрузки данных
+│         ├── example.yaml
+│      ├── datasets                         # Конфигурация датасетов (трейн/вал/тест)
+│         ├── example.yaml                      # Пример
+│         ├── onebatchtest.yaml                 # Быстрый тест на 1 батче
+│      ├── metrics                          # Конфиги метрик, используемых при оценке модели
+│         ├── example.yaml
+│      ├── models                           # Конфиги моделей
+│         ├── baseline.yaml                     # Конфиг базовой модели
+│         ├── deepspeech2.yaml                  # Конфиг deepspeech2
+│      ├── transforms                       #  
+│         ├── batch_transforms
+│            ├── example.yaml
+│         ├── instance_transforms
+│            ├── example.yaml
+│         ├── example_only_instance.yaml
+│         ├── example.yaml
+│      ├── writer                           # 
+│         ├── example.yaml
+│      ├── baseline.yaml                    # 
+│      ├── deepspeech2_baseline.yaml        # 
+│      ├── deepspeech2_inference.yaml       # 
+│      ├── inference.yaml                   #
+│   ├── datasets                        # обработка датасетов
+│      ├── __init__.py
+│      ├── base_dataset.py                  # Base class for the datasets
+│      ├── collate.py                       #
+│      ├── common_voice.py                  #
+│      ├── custom_dir_audio_dataset.py      #
+│      ├── data_utils.py                    #
+│      ├── librispeech_dataset.py           #
+│   ├── logger                          # experiment tracking
+│      ├── __init__.py
+│      ├── cometml.py                       # Class for experiment tracking via CometML
+│      ├── logger_config.json               #
+│      ├── logger.py                        # Setup logging configuration
+│      ├── utils.py                         #
+│      ├── wandb.py                         # Class for experiment tracking via WandB
+│   ├── loss                            # Функции потерь
+│      ├── __init__.py
+│      ├── ctc_loss.py                      # Функция потерь CTC
+│   ├── metrics                         # метрики
+│      ├── __init__.py
+│      ├── base_metric.py                   # Base class for all metrics
+│      ├── cer.py                           # Метрика CER (Character Error Rate)
+│      ├── tracker.py                       # Class to aggregate metrics from many batches
+│      ├── utils.py                         #
+│      ├── wer.py                           # Метрика WER (Word Error Rate)
+│   ├── models                          # архитектуры моделей ASR
+│      ├── __init__.py
+│      ├── baseline_model.py                # архитектура базовой модели
+│      ├── deepspeech2.py                   # архитектура deepspeech2
+│   ├── text_encoder                    # 
+│      ├── __init__.py
+│      ├── ctc_text_encoder.py              # 
+│   ├── trainer                         #
+│      ├── __init__.py
+│      ├── base_trainer.py
+│      ├── inferencer.py
+│      ├── trainer.py
+│   ├── transforms                      # 
+│      ├── spec_augs                        # Аугментация спектрограмм
+│         ├── __init__.py                       #   
+│      ├── wav_augs                         # Аугментация аудиофайлов
+│         ├── __init__.py
+│         ├── gain.py                           # Увеличиваем гейн
+│      ├── __init__.py
+│   ├── utils                           # 
+│      ├── __init__.py
+│      ├── init_utils.py                    #
+│      ├── io_utils.py                      #
+│   ├── __init__.py
+├── LICENSE                         # Лицензия
+├── README.md                       # Описание проекта
+└── requirements.txt                # Список зависимостей проекта
+```

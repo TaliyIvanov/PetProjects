@@ -1,3 +1,6 @@
+# Конфигурация для быстрого теста (one batch test).
+# Ограничивает количество примеров (limit=2) и длину аудио/текста.
+# Используется dev-clean часть датасета Librispeech.
 train:
   _target_: src.datasets.LibrispeechDataset
   part: "dev-clean"
