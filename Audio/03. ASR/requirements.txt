@@ -15,3 +15,6 @@ black
 isort
 pre-commit
 cd
+
+datasets
+wget==1.21.4

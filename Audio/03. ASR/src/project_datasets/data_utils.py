@@ -11,7 +11,7 @@ from itertools import repeat
 
 from hydra.utils import instantiate
 
-from src.datasets.collate import collate_fn
+from src.project_datasets.collate import collate_fn
 from src.utils.init_utils import set_worker_seed
 
 

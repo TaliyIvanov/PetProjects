@@ -162,6 +162,8 @@ This repository is based on a [PyTorch Project Template](https://github.com/Blin
 
 
 # Состав проекта
+[Lection fragment about configs in project](https://youtu.be/zcSTrzW7kbs?list=PLYG3WHDP5CWVRxLjXZbllqIQTWY_QjKmz&t=10383)
+
 
 ```
 ASR_Project/
@@ -178,7 +180,7 @@ ASR_Project/
 │   ├── configs                         # 
 │      ├── dataloader                       # Конфигурация DataLoader для загрузки данных
 │         ├── example.yaml
-│      ├── datasets                         # Конфигурация датасетов (трейн/вал/тест)
+│      ├── project_datasets                 # Конфигурация датасетов (трейн/вал/тест)
 │         ├── example.yaml                      # Пример
 │         ├── onebatchtest.yaml                 # Быстрый тест на 1 батче
 │      ├── metrics                          # Конфиги метрик, используемых при оценке модели
@@ -200,7 +202,7 @@ ASR_Project/
 │      ├── deepspeech2_baseline.yaml        # Основная конфигурация обучения deepspeech2
 │      ├── deepspeech2_inference.yaml       # Основная конфигурация предсказаний deepspeech2
 │      ├── inference.yaml                   # Основная конфигурация предсказаний
-│   ├── datasets                        # обработка датасетов
+│   ├── project_datasets                # обработка датасетов
 │      ├── __init__.py
 │      ├── base_dataset.py                  # Base class datasets for ASR
 │      ├── collate.py                       # создания функции коллэйта(объединяет список отдельных элементов из датасета в батч перед передачей в DataLoader)
