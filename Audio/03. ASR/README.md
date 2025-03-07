@@ -186,33 +186,34 @@ ASR_Project/
 │      ├── models                           # Конфиги моделей
 │         ├── baseline.yaml                     # Конфиг базовой модели
 │         ├── deepspeech2.yaml                  # Конфиг deepspeech2
-│      ├── transforms                       #  
-│         ├── batch_transforms
-│            ├── example.yaml
-│         ├── instance_transforms
-│            ├── example.yaml
-│         ├── example_only_instance.yaml
-│         ├── example.yaml
-│      ├── writer                           # 
-│         ├── example.yaml
-│      ├── baseline.yaml                    # 
-│      ├── deepspeech2_baseline.yaml        # 
-│      ├── deepspeech2_inference.yaml       # 
-│      ├── inference.yaml                   #
+│      ├── transforms                       # Конфиги преобразования данных
+│         ├── batch_transforms                  # Конфиги преобразования батчей
+│            ├── example.yaml                       # применяется к целому батчу данных одновременно
+│         ├── instance_transforms               # Конфиги преобразования отдельных данных
+│            ├── example.yaml                       # применяется к каждому аудиофайлу отдельно
+│         ├── example_only_instance.yaml        # наследует instance-трансформации и отключает batch-трансформации
+│         ├── example.yaml                      # наследует настройки batch-level и instance-level трансформаций
+│      ├── writer                           # Конфиги логирования
+│         ├── cometml.yaml                      # конфигурация логирования в cometml
+│         ├── wandb.yaml                        # конфигурация логирования в wandb
+│      ├── baseline.yaml                    # Основная конфигурация обучения
+│      ├── deepspeech2_baseline.yaml        # Основная конфигурация обучения deepspeech2
+│      ├── deepspeech2_inference.yaml       # Основная конфигурация предсказаний deepspeech2
+│      ├── inference.yaml                   # Основная конфигурация предсказаний
 │   ├── datasets                        # обработка датасетов
 │      ├── __init__.py
-│      ├── base_dataset.py                  # Base class for the datasets
-│      ├── collate.py                       #
-│      ├── common_voice.py                  #
-│      ├── custom_dir_audio_dataset.py      #
-│      ├── data_utils.py                    #
-│      ├── librispeech_dataset.py           #
+│      ├── base_dataset.py                  # Base class datasets for ASR
+│      ├── collate.py                       # создания функции коллэйта(объединяет список отдельных элементов из датасета в батч перед передачей в DataLoader)
+│      ├── common_voice.py                  # загружает **Common Voice** — один из крупнейших открытых датасетов речи
+│      ├── custom_dir_audio_dataset.py      # загружает аудиофайлы из указанной директории
+│      ├── data_utils.py                    # содержит утилиты для работы с DataLoader
+│      ├── librispeech_dataset.py           # загружает **Librispeech** — один из крупнейших открытых датасетов речи
 │   ├── logger                          # experiment tracking
 │      ├── __init__.py
 │      ├── cometml.py                       # Class for experiment tracking via CometML
-│      ├── logger_config.json               #
+│      ├── logger_config.json               # содержит конфигурацию логирования для Python (logging)
 │      ├── logger.py                        # Setup logging configuration
-│      ├── utils.py                         #
+│      ├── utils.py                         # Combine several images into one figure
 │      ├── wandb.py                         # Class for experiment tracking via WandB
 │   ├── loss                            # Функции потерь
 │      ├── __init__.py
@@ -222,7 +223,7 @@ ASR_Project/
 │      ├── base_metric.py                   # Base class for all metrics
 │      ├── cer.py                           # Метрика CER (Character Error Rate)
 │      ├── tracker.py                       # Class to aggregate metrics from many batches
-│      ├── utils.py                         #
+│      ├── utils.py                         # 
 │      ├── wer.py                           # Метрика WER (Word Error Rate)
 │   ├── models                          # архитектуры моделей ASR
 │      ├── __init__.py
@@ -238,7 +239,7 @@ ASR_Project/
 │      ├── trainer.py
 │   ├── transforms                      # 
 │      ├── spec_augs                        # Аугментация спектрограмм
-│         ├── __init__.py                       #   
+│         ├── __init__.py
 │      ├── wav_augs                         # Аугментация аудиофайлов
 │         ├── __init__.py
 │         ├── gain.py                           # Увеличиваем гейн

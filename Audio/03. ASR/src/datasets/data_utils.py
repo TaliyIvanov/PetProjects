@@ -1,3 +1,12 @@
+"""
+data_utils.py содержит утилиты для работы с DataLoader:
+- inf_loop(): бесконечный цикл для итеративного обучения.
+- move_batch_transforms_to_device(): переносит batch-трансформации на GPU/CPU.
+- get_dataloaders(): создает DataLoader для train/val/test с нужными трансформациями.
+"""
+
+
+
 from itertools import repeat
 
 from hydra.utils import instantiate

@@ -1,3 +1,8 @@
+"""
+Класс CustomDirAudioDataset загружает аудиофайлы из указанной директории.
+Если указана директория с транскрипциями, сопоставляет их с аудиофайлами.
+Поддерживает форматы: .mp3, .wav, .flac, .m4a.
+"""
 from pathlib import Path
 
 from src.datasets.base_dataset import BaseDataset
