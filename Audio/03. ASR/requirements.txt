@@ -21,3 +21,4 @@ wget==1.21.4
 librosa==0.10.1
 
 requests==2.31.0
+editdistance==0.8.1
