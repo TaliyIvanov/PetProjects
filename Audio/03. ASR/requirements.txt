@@ -1,7 +1,7 @@
 torch==2.2.0
 torchvision==0.17.0
 torchaudio==2.2.0
-soundfile
+soundfile==0.12.1
 numpy==1.26.4
 torch_audiomentations
 tqdm
@@ -18,3 +18,6 @@ cd
 
 datasets
 wget==1.21.4
+librosa==0.10.1
+
+requests==2.31.0

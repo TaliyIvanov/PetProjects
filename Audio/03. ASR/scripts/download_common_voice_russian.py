@@ -7,4 +7,4 @@ from src.project_datasets.common_voice_ru import CommonVoiceDataset_RU
 # Загружаем train-сплит
 dataset = CommonVoiceDataset_RU(split="train")
 
-print("✅ Метаданные успешно загружены!")
+print("Метаданные CommonVoice успешно загружены!")
