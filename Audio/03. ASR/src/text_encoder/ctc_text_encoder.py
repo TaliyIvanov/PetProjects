@@ -59,7 +59,33 @@ class CTCTextEncoder:
         return "".join([self.ind2char[int(ind)] for ind in inds]).strip()
 
     def ctc_decode(self, inds) -> str:
-        pass  # TODO
+        """
+        Decoding with CTC.
+        Used to decode output of the model
+
+        Args: 
+         inds (list): list of tokens.
+        Returs: 
+        raw_text (str): raw text without empty tokens nor repetitions.
+        """
+        decoded = []
+        last_char_ind = self.EMPTY_IND
+        for ind in inds:
+            if last_char_ind == ind:
+                continue
+            if ind != self.EMPTY_IND:
+                decoded.append(self.ind2char[ind])
+                last_char_ind = ind
+        return "".join(decoded)
+              
+    def expand_and_merge_path():
+        pass
+
+    def truncate_paths():
+        pass
+    
+    def ctc_beam_search():
+        pass
 
     @staticmethod
     def normalize_text(text: str):
