@@ -1,10 +1,10 @@
 # Основная конфигурация обучения.
 # Определяет модель, датасеты, метрики, аугментации, оптимизатор, лосс, текстовый энкодер и тренер.
 defaults:
-  - model: deepspeech2
+  - models: deepspeech2
   - writer: wandb
   - metrics: example
-  - datasets: onebatchtest
+  - datasets: librispeech_ru
   - dataloader: example
   - transforms: example_only_instance
   - _self_

@@ -1,4 +1,5 @@
 from src.datasets.common_voice import CommonVoiceDataset
 from src.datasets.custom_dir_audio_dataset import CustomDirAudioDataset
 from src.datasets.librispeech_dataset import LibrispeechDataset
+from src.datasets.librispeech_dataset_ru import LibrispeechDataset_RU
 from src.datasets.common_voice_ru import CommonVoiceDataset_RU

@@ -3,9 +3,9 @@
 # Указывает, где хранится предобученная модель и какие тензоры загружать на устройство.
 
 defaults:
-  - model: deepspeech2
+  - models: deepspeech2
   - metrics: example
-  - datasets: onebatchtest # we do not want to run inference on training data
+  - datasets: librispeech_ru # we do not want to run inference on training data
   - dataloader: example
   - transforms: example
   - _self_
