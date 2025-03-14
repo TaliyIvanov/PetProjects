@@ -5,7 +5,7 @@
 """
 from pathlib import Path
 
-from src.project_datasets.base_dataset import BaseDataset
+from src.datasets.base_dataset import BaseDataset
 
 
 class CustomDirAudioDataset(BaseDataset):

@@ -95,6 +95,9 @@ class Trainer(BaseTrainer):
         # TODO add beam search
         # Note: by improving text encoder and metrics design
         # this logging can also be improved significantly
+        bs_results = []
+        for log_probs_line in log_probs:
+            bs_results.append(self.text_encoder.ctc_beam_search(log_probs_line.exp().detach().numpy(), 5)[0])
 
         argmax_inds = log_probs.cpu().argmax(-1).numpy()
         argmax_inds = [

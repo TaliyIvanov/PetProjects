@@ -2,7 +2,7 @@
 # PYTHONPATH=$(pwd) python scripts/download_librispeech_russian.py
 
 
-from src.project_datasets.librispeech_dataset_ru import LibrispeechDataset_RU
+from src.datasets.librispeech_dataset_ru import LibrispeechDataset_RU
 
 # Загружаем train-сплит
 dataset = LibrispeechDataset_RU(part="ruls_data")

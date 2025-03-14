@@ -174,6 +174,7 @@ ASR_Project/
 ├── scripts/                        # Скрипты
 │   ├── deepspeech2_inference.py        # инференс deepspeech2
 │   ├── deepspeech2_train.py            # тренировка deepspeech2
+│   ├── download_common_voice_russian.py # скрипт для скачивания c_v_russian version
 │   ├── inference.py                    # скрипт инференса (предсказаний) обученной модели ASR
 │   ├── train.py                        # скрипт обучения модели
 ├── src/                            # 

@@ -4,7 +4,7 @@ import hydra
 import torch
 from hydra.utils import instantiate
 
-from src.project_datasets.data_utils import get_dataloaders
+from src.datasets.data_utils import get_dataloaders
 from src.trainer import Inferencer
 from src.utils.init_utils import set_random_seed
 from src.utils.io_utils import ROOT_PATH

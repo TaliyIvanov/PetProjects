@@ -1,5 +1,5 @@
 # Конфигурация DataLoader для загрузки данных
 _target_: torch.utils.data.DataLoader # определяет, что используется DataLoader
-batch_size: 10 # количество примеров в одном батче
+batch_size: 2 # количество примеров в одном батче
 num_workers: 2 # количество потоков для загрузки данных
 pin_memory: True # ускорение передачи данных в GPU

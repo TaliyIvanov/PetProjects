@@ -1,6 +1,6 @@
 import re
 from string import ascii_lowercase
-
+from collections import defaultdict
 import torch
 
 # TODO add CTC decode
@@ -8,10 +8,12 @@ import torch
 # Note: think about metrics and encoder
 # The design can be remarkably improved
 # to calculate stuff more efficiently and prettier
-
+# для использования с русским текстом, необходимо следующе:
+# encoder = CTCTextEncoder(alphabet=list("абвгдеёжзийклмнопрстуфхцчшщъыьэюя "))
 
 class CTCTextEncoder:
     EMPTY_TOK = ""
+    EMPTY_IND = 0
 
     def __init__(self, alphabet=None, **kwargs):
         """
@@ -77,18 +79,59 @@ class CTCTextEncoder:
                 decoded.append(self.ind2char[ind])
                 last_char_ind = ind
         return "".join(decoded)
-              
-    def expand_and_merge_path():
-        pass
-
-    def truncate_paths():
-        pass
     
-    def ctc_beam_search():
-        pass
+    # stole this code here: https://github.com/mediolanum1/deep-speech-2-/blob/main/src/text_encoder/ctc_text_encoder.py
+    # This function expands and merges paths based on the next character probabilities.
+    # params: dp - dict storing possible paths(prefixes) and their probs up to current timestep
+    #         next_token_probs - probs of next possible chars
+
+    # basically creates dict and stores all possible paths, for each next_token_prob compares with our last char to avoid reps
+    # in the end multiplies current prob v with next_token_prob that we choose          
+    def expand_and_merge_path(self, dp, next_token_prob):
+        new_dp = defaultdict(float)
+        for ind, next_token_prob in enumerate(next_token_prob):
+            current_char = self.ind2char[ind]
+            for (prefix, last_char), v in dp.items():
+                if last_char == current_char:
+                    new_prefix = prefix
+                else:
+                    if current_char != self.EMPTY_TOK:
+                        new_prefix = prefix + current_char
+                    else:
+                        new_prefix = prefix
+                new_dp[(new_prefix, current_char)] += v * next_token_prob
+        return new_dp
+
+    # This function keeps only the top beam_size paths with the highest probabilities.
+    def truncate_paths(self, dp, beam_size):
+        return dict(sorted(list(dp.items()), key=lambda x: -x[1])[:beam_size])
+
+    # Выполняет CTC-бим-поиск для получения наилучших гипотез расшифровки на основе вероятностей символов.
+    # Инициализирует динамическое программирование (dp) с пустым префиксом и токеном EMPTY_TOK с вероятностью 1.0.
+    # На каждом шаге обновляет пути на основе текущих вероятностей и сокращает их до размера beam_size.
+    # В конце нормализует вероятности с учётом длины префикса и возвращает отсортированный список путей.
+    def ctc_beam_search(self, probs, beam_size):
+        dp = {
+            ('', self.EMPTY_TOK): 1.0,    # dp is initialized with a single path ('', EMPTY_TOK) and probability 1.0.
+        }
+        for prob in probs:
+            dp = self.expand_and_merge_path(dp, prob)
+            dp = self.truncate_paths(dp, beam_size)
+        dp = [
+            (prefix, proba / len(prefix) if len(prefix) > 0 else proba)
+            for (prefix, _), proba in sorted(dp.items(), key=lambda x: -x[1])
+        ]
+        return dp    
 
     @staticmethod
     def normalize_text(text: str):
         text = text.lower()
         text = re.sub(r"[^a-z ]", "", text)
+        return text
+
+    # добавил метод для нормализации русского алфавита
+    @staticmethod
+    def normalize_rus_text(text: str):
+        text = text.lower()
+        text = re.sub(r"[^а-яё ]", "", text)
         return text

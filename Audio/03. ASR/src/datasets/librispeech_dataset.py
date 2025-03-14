@@ -14,7 +14,7 @@ import torchaudio
 import wget
 from tqdm import tqdm
 
-from src.project_datasets.base_dataset import BaseDataset
+from src.datasets.base_dataset import BaseDataset
 from src.utils.io_utils import ROOT_PATH
 
 URL_LINKS = {
