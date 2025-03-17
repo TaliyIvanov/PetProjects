@@ -1,0 +1,7 @@
+_target_: src.model.DeepSpeech2
+num_classes: 28  # Количество классов (например, для CTC)
+rnn_hidden_size: 512  # Размер скрытых слоев RNN
+num_rnn_layers: 3  # Количество слоев RNN
+
+# n_feats: 1280 # Размерность входа в RNN (CNN уменьшает размерность, но увеличивает каналы)
+# fc_hidden: 1024 # Двунаправленный GRU удваивает hidden_size

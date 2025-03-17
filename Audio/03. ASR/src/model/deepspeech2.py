@@ -35,6 +35,6 @@ class DeepSpeech2(nn.Module):
         x, _ = self.rnn(x)
 
         # Fully Connected Layer
-        x = self.dc(x)
+        x = self.fc(x)
 
         return x

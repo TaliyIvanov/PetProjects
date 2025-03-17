@@ -1,12 +1,16 @@
-train:
-  _target_: src.datasets.LibrispeechDataset_RU
-  part: "ruls_data"
-  instance_transforms: ${transforms.instance_transforms.train}
-val:
-  _target_: src.datasets.LibrispeechDataset_RU
-  part: "dev"
-  instance_transforms: ${transforms.instance_transforms.inference}
-test:
-  _target_: src.datasets.LibrispeechDataset_RU
-  part: "test"
-  instance_transforms: ${transforms.instance_transforms.inference}
+datasets:
+  librispeech_ru:
+    data_dir: /media/talium/1DA5AE943A305AF1/DataSciense/Projects/PetProjects/Audio/03. ASR/data
+  # или ./data/librispeech_russian если конфиг и данные в одной папке
+    train:
+      _target_: src.datasets.LibrispeechDataset_RU
+      part: train
+      instance_transforms: ${transforms.instance_transforms.train}
+    val:
+      _target_: src.datasets.LibrispeechDataset_RU
+      part: dev
+      instance_transforms: ${transforms.instance_transforms.inference}
+    test:
+      _target_: src.datasets.LibrispeechDataset_RU
+      part: test
+      instance_transforms: ${transforms.instance_transforms.inference}

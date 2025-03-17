@@ -60,35 +60,6 @@ class LibrispeechDataset(BaseDataset):
         os.remove(str(arch_path))
         shutil.rmtree(str(self._data_dir / "LibriSpeech"))
 
-    # код, чтобы не скачивать данные повторно!)
-    # def _load_part(self, part):
-    #     arch_path = self._data_dir / f"{part}.tar.gz"
-        
-    #     # Проверка, существует ли архив
-    #     if not arch_path.exists():
-    #         print(f"Загружаю часть {part}")
-    #         wget.download(URL_LINKS[part], str(arch_path))
-    #     else:
-    #         print(f"Архив {part} уже существует, пропускаем загрузку.")
-
-    #     # Проверка, разархивированы ли данные
-    #     split_dir = self._data_dir / part
-    #     if not split_dir.exists() or not any(split_dir.iterdir()):
-    #         print(f"Разархивируем часть {part}")
-    #         shutil.unpack_archive(arch_path, self._data_dir)
-
-    #         # Перемещение файлов из папки LibriSpeech, если она существует
-    #         libri_dir = self._data_dir / "LibriSpeech"
-    #         if libri_dir.exists():
-    #             for fpath in libri_dir.iterdir():
-    #                 shutil.move(str(fpath), str(self._data_dir / fpath.name))
-    #             shutil.rmtree(str(libri_dir))
-    #         else:
-    #             print("Папки 'LibriSpeech' нет, данные уже разархивированы корректно.")
-
-    #     os.remove(str(arch_path))  # Удаляем скачанный архив
-
-
     def _get_or_load_index(self, part):
         index_path = self._data_dir / f"{part}_index.json"
         if index_path.exists():

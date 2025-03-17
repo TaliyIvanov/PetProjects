@@ -172,9 +172,10 @@ ASR_Project/
 ├── notebooks/                      # Ноутбуки для разведочного анализа/иных целей
 │   ├── notebookforreserch.ipynb        # ноутбук для разведочного анализа данных
 ├── scripts/                        # Скрипты
+│   ├── сchange_manifest.py             # переписывает json на корректный
 │   ├── deepspeech2_inference.py        # инференс deepspeech2
 │   ├── deepspeech2_train.py            # тренировка deepspeech2
-│   ├── download_common_voice_russian.py # скрипт для скачивания c_v_russian version
+│   ├── download_common_voice_russian.py # download c_v_russian version
 │   ├── inference.py                    # скрипт инференса (предсказаний) обученной модели ASR
 │   ├── train.py                        # скрипт обучения модели
 ├── src/                            # 
@@ -186,7 +187,7 @@ ASR_Project/
 │         ├── onebatchtest.yaml                 # Быстрый тест на 1 батче
 │      ├── metrics                          # Конфиги метрик, используемых при оценке модели
 │         ├── example.yaml
-│      ├── models                           # Конфиги моделей
+│      ├── model                            # Конфиги моделей
 │         ├── baseline.yaml                     # Конфиг базовой модели
 │         ├── deepspeech2.yaml                  # Конфиг deepspeech2
 │      ├── transforms                       # Конфиги преобразования данных
@@ -228,18 +229,18 @@ ASR_Project/
 │      ├── tracker.py                       # Class to aggregate metrics from many batches
 │      ├── utils.py                         # 
 │      ├── wer.py                           # Метрика WER (Word Error Rate)
-│   ├── models                          # архитектуры моделей ASR
+│   ├── model                           # архитектуры моделей ASR
 │      ├── __init__.py
 │      ├── baseline_model.py                # архитектура базовой модели
 │      ├── deepspeech2.py                   # архитектура deepspeech2
-│   ├── text_encoder                    # 
+│   ├── text_encoder                    # кодировщики текста
 │      ├── __init__.py
-│      ├── ctc_text_encoder.py              # 
-│   ├── trainer                         #
+│      ├── ctc_text_encoder.py              # кодирование и декодирования текста
+│   ├── trainer                         # Обучение моделей
 │      ├── __init__.py
-│      ├── base_trainer.py
-│      ├── inferencer.py
-│      ├── trainer.py
+│      ├── base_trainer.py                  # модульный класс для обучения моделей в PyTorch
+│      ├── inferencer.py                    # модифицированный base_trainer для инференса модели
+│      ├── trainer.py                       # продвинутая реализация тренера для ASR
 │   ├── transforms                      # 
 │      ├── spec_augs                        # Аугментация спектрограмм
 │         ├── __init__.py
