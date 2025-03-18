@@ -1,4 +1,3 @@
-# src/configs/datasets/librispeech_ru.yaml
 train:
     _target_: src.datasets.LibrispeechDataset_RU
     data_dir: /media/talium/1DA5AE943A305AF1/DataSciense/Projects/PetProjects/Audio/03. ASR/data

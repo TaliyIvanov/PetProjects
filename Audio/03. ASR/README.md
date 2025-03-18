@@ -1,3 +1,11 @@
+# Temporarily suspended
+I am temporarily suspending the development of this project, because I have some problems.
+Firstly, I do not have enough experience in developing in this format, so keeping so much in my head and studying the architecture is problematic.
+Secondly, the course teachers assumed that it would be implemented in English. This is exactly what I will do first, it is better to master the architecture of DeepSpace 2, and then return to implement it in Russian.
+Thirdly, some of the code here was written before me, and its analysis takes too much time for a developer of my level. I assume that students studying in the 3rd-4th year of this course have already mastered this code, but I did not have this opportunity.
+
+In general, I will start with less and return here more experienced, so as not to burn out and not abandon it completely)
+
 # First try to create project with template
 
 It's first try to create project with Template. I need to study this template!=)
