@@ -1,3 +1,6 @@
+# About
+This is first HW. I will study how to use DeepSpeech2 in ASR project!)
+
 # Automatic Speech Recognition (ASR) with PyTorch
 
 <p align="center">
