@@ -3,7 +3,7 @@ import torch.nn as nn
 import torch.nn.functional as F
 
 class DeepSpeech2(nn.Module):
-    def __init__(self, num_classes, rnn_hidden_size=512, num_rnn_layers=3):
+    def __init__(self, n_tokens, rnn_hidden_size=512, num_rnn_layers=3):
         super(DeepSpeech2, self).__init__()
 
         # 2D Convolutional Layer
@@ -20,7 +20,7 @@ class DeepSpeech2(nn.Module):
                           bidirectional=True)
         
         # Fully Connected Layer
-        self.fc = nn.Linear(rnn_hidden_size * 2, num_classes) # 2x for bidirectional GRU
+        self.fc = nn.Linear(rnn_hidden_size * 2, n_tokens) # 2x for bidirectional GRU
 
     def forward(self, x):
         # Convolutional Layers

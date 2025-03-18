@@ -13,6 +13,7 @@ CV/01.Classification_Images/CIenv/
 # Исключить папку с данными
 Audio/01.Talium_TTS/data/
 Audio/03. ASR/data
+Audio/03. ASR/wandb
 # Исключить виртуальное окружение
 Audio/01.Talium_TTS/TTSenv
 Audio/01.Talium_TTS/TTSenv310
@@ -30,3 +31,9 @@ ClassicML/01.A-Money/catboost_info
 ClassicML/01.A-Money/.ipynb_checkpoints
 # Исключить виртуальное окружение
 ClassicML/01.A-Money/Classicenv
+
+
+# Исключаем не нужные файлы
+**/__pycache__
+*.pyc
+

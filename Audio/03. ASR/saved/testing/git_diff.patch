@@ -1,0 +1,322 @@
+diff --git a/.gitignore b/.gitignore
+index 40a6257..4187ed2 100644
+--- a/.gitignore
++++ b/.gitignore
+@@ -13,6 +13,7 @@ CV/01.Classification_Images/CIenv/
+ # Исключить папку с данными
+ Audio/01.Talium_TTS/data/
+ Audio/03. ASR/data
++Audio/03. ASR/wandb
+ # Исключить виртуальное окружение
+ Audio/01.Talium_TTS/TTSenv
+ Audio/01.Talium_TTS/TTSenv310
+@@ -30,3 +31,9 @@ ClassicML/01.A-Money/catboost_info
+ ClassicML/01.A-Money/.ipynb_checkpoints
+ # Исключить виртуальное окружение
+ ClassicML/01.A-Money/Classicenv
++
++
++# Исключаем не нужные файлы
++**/__pycache__
++*.pyc
++
+diff --git a/Audio/03. ASR/notebooks/notebookforreserch.ipynb b/Audio/03. ASR/notebooks/notebookforreserch.ipynb
+index 0db57b7..613e6a0 100644
+--- a/Audio/03. ASR/notebooks/notebookforreserch.ipynb	
++++ b/Audio/03. ASR/notebooks/notebookforreserch.ipynb	
+@@ -35,7 +35,7 @@
+    "source": [
+     "Для запуска тренировки:\n",
+     "\n",
+-    "PYTHONPATH=$(pwd) python3 scripts/train.py -cn=deepspeech2_baseline\n"
++    "PYTHONPATH=$(pwd) python3 scripts/deepspeech2_train.py -cn=deepspeech2_baseline"
+    ]
+   },
+   {
+diff --git a/Audio/03. ASR/scripts/deepspeech2_train.py b/Audio/03. ASR/scripts/deepspeech2_train.py
+index e7e6c08..469dd05 100644
+--- a/Audio/03. ASR/scripts/deepspeech2_train.py	
++++ b/Audio/03. ASR/scripts/deepspeech2_train.py	
+@@ -12,7 +12,7 @@ from src.utils.init_utils import set_random_seed, setup_saving_and_logging
+ warnings.filterwarnings("ignore", category=UserWarning)
+ 
+ 
+-@hydra.main(version_base=None, config_path="src/configs", config_name="baseline")
++@hydra.main(version_base=None, config_path="../src/configs", config_name="baseline")
+ def main(config):
+     """
+     Main script for training. Instantiates the model, optimizer, scheduler,
+diff --git a/Audio/03. ASR/scripts/train.py b/Audio/03. ASR/scripts/train.py
+index 469dd05..e7e6c08 100644
+--- a/Audio/03. ASR/scripts/train.py	
++++ b/Audio/03. ASR/scripts/train.py	
+@@ -12,7 +12,7 @@ from src.utils.init_utils import set_random_seed, setup_saving_and_logging
+ warnings.filterwarnings("ignore", category=UserWarning)
+ 
+ 
+-@hydra.main(version_base=None, config_path="../src/configs", config_name="baseline")
++@hydra.main(version_base=None, config_path="src/configs", config_name="baseline")
+ def main(config):
+     """
+     Main script for training. Instantiates the model, optimizer, scheduler,
+diff --git a/Audio/03. ASR/src/configs/datasets/librispeech_ru.yaml b/Audio/03. ASR/src/configs/datasets/librispeech_ru.yaml
+index 9a3b1b1..f7e50c5 100644
+--- a/Audio/03. ASR/src/configs/datasets/librispeech_ru.yaml	
++++ b/Audio/03. ASR/src/configs/datasets/librispeech_ru.yaml	
+@@ -1,16 +1,16 @@
+-datasets:
+-  librispeech_ru:
++# src/configs/datasets/librispeech_ru.yaml
++train:
++    _target_: src.datasets.LibrispeechDataset_RU
+     data_dir: /media/talium/1DA5AE943A305AF1/DataSciense/Projects/PetProjects/Audio/03. ASR/data
+-  # или ./data/librispeech_russian если конфиг и данные в одной папке
+-    train:
+-      _target_: src.datasets.LibrispeechDataset_RU
+-      part: train
+-      instance_transforms: ${transforms.instance_transforms.train}
+-    val:
+-      _target_: src.datasets.LibrispeechDataset_RU
+-      part: dev
+-      instance_transforms: ${transforms.instance_transforms.inference}
+-    test:
+-      _target_: src.datasets.LibrispeechDataset_RU
+-      part: test
+-      instance_transforms: ${transforms.instance_transforms.inference}
+\ No newline at end of file
++    split: train  # <--- Добавлено
++    instance_transforms: ${transforms.instance_transforms.train}
++val:
++    _target_: src.datasets.LibrispeechDataset_RU
++    data_dir: /media/talium/1DA5AE943A305AF1/DataSciense/Projects/PetProjects/Audio/03. ASR/data
++    split: val  # <--- Добавлено
++    instance_transforms: ${transforms.instance_transforms.inference}
++test:
++    _target_: src.datasets.LibrispeechDataset_RU
++    data_dir: /media/talium/1DA5AE943A305AF1/DataSciense/Projects/PetProjects/Audio/03. ASR/data
++    split: test  # <--- Добавлено
++    instance_transforms: ${transforms.instance_transforms.inference}
+\ No newline at end of file
+diff --git a/Audio/03. ASR/src/configs/model/deepspeech2.yaml b/Audio/03. ASR/src/configs/model/deepspeech2.yaml
+index 801f657..bae41eb 100644
+--- a/Audio/03. ASR/src/configs/model/deepspeech2.yaml	
++++ b/Audio/03. ASR/src/configs/model/deepspeech2.yaml	
+@@ -1,5 +1,5 @@
+ _target_: src.model.DeepSpeech2
+-num_classes: 28  # Количество классов (например, для CTC)
++n_tokens: 33  # Количество классов (например, для CTC)
+ rnn_hidden_size: 512  # Размер скрытых слоев RNN
+ num_rnn_layers: 3  # Количество слоев RNN
+ 
+diff --git a/Audio/03. ASR/src/datasets/collate.py b/Audio/03. ASR/src/datasets/collate.py
+index 3f8a624..bf0fccf 100644
+--- a/Audio/03. ASR/src/datasets/collate.py	
++++ b/Audio/03. ASR/src/datasets/collate.py	
+@@ -1,17 +1,52 @@
+ import torch
+ 
+-
+ def collate_fn(dataset_items: list[dict]):
+     """
+     Collate and pad fields in the dataset items.
+     Converts individual items into a batch.
+ 
+     Args:
+-        dataset_items (list[dict]): list of objects from
+-            dataset.__getitem__.
++        dataset_items (list[dict]): list of objects from dataset.__getitem__.
+     Returns:
+-        result_batch (dict[Tensor]): dict, containing batch-version
+-            of the tensors.
++        result_batch (dict[Tensor]): dict, containing batch-version of the tensors.
+     """
+ 
+-    pass  # TODO
++    # Извлекаем данные из списка словарей
++    audios, spectrograms, texts, text_encodeds, audio_paths = zip(
++        *[(item["audio"], item["spectrogram"], item["text"], item["text_encoded"], item["audio_path"]) for item in dataset_items]
++    )
++
++    # Определяем длины спектрограмм
++    spectrogram_lengths = torch.tensor([spectrogram.shape[-1] for spectrogram in spectrograms], dtype=torch.long)
++
++    # Создаем тензор для хранения паддированных спектрограмм
++    freq_size = spectrograms[0].shape[0]  # Размер частотного спектра (обычно 128)
++    max_length = max(spectrogram_lengths)  # Максимальная длина по времени
++    spectrograms_padded = torch.zeros(len(spectrograms), freq_size, max_length)
++
++    # Паддинг спектрограмм
++    for i, spectrogram in enumerate(spectrograms):
++        spectrograms_padded[i, :, :spectrogram.shape[-1]] = spectrogram
++
++    # Определяем длины текстов
++    text_lengths = torch.tensor([len(text) for text in text_encodeds], dtype=torch.long)
++
++    # Создаем тензор для хранения паддированных текстов
++    max_text_length = max(text_lengths)
++    text_padded = torch.zeros(len(text_encodeds), max_text_length, dtype=torch.long)
++
++    # Паддинг текстов
++    for i, text in enumerate(text_encodeds):
++        text_padded[i, :len(text)] = torch.tensor(text, dtype=torch.long)
++
++    # Формируем батч в виде словаря
++    return {
++        'audio': audios,                                 # Сырые аудиоданные (например, волны)
++        'spectrogram': spectrograms_padded,               # Паддированные спектрограммы
++        'spectrogram_length': spectrogram_lengths,        # Длины спектрограмм
++        'text': texts,                                    # Исходные текстовые строки
++        'text_encoded': text_padded,                       # Паддированные закодированные тексты
++        'text_encoded_length': text_lengths,               # Длины закодированных текстов
++        'audio_path': audio_paths,                         # Пути к аудиофайлам
++    }
++
+diff --git a/Audio/03. ASR/src/datasets/librispeech_dataset_ru.py b/Audio/03. ASR/src/datasets/librispeech_dataset_ru.py
+index 94e712a..01dca0c 100644
+--- a/Audio/03. ASR/src/datasets/librispeech_dataset_ru.py	
++++ b/Audio/03. ASR/src/datasets/librispeech_dataset_ru.py	
+@@ -18,43 +18,39 @@ URL_LINKS = {
+ # Настройка логирования
+ logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
+ 
++# class LibrispeechDataset_RU(BaseDataset):
++#     def __init__(self, part, data_dir=None, *args, **kwargs):
++#         if data_dir is None:
++#             data_dir = ROOT_PATH / "data" / "librispeech_russian"
++#             data_dir.mkdir(exist_ok=True, parents=True)
++#         self._data_dir = Path(data_dir) if isinstance(data_dir, str) else data_dir
++
++#         # Формируем путь к части датасета
++#         split_dir = self._data_dir / part
++#         index = self._get_or_load_index(split_dir) # Передаем split_dir
++
++#         super().__init__(index, *args, **kwargs)
++
+ class LibrispeechDataset_RU(BaseDataset):
+-    def __init__(self, part, data_dir=None, *args, **kwargs):
++    def __init__(self, split, data_dir, *args, **kwargs):
+         if data_dir is None:
+             data_dir = ROOT_PATH / "data" / "librispeech_russian"
+             data_dir.mkdir(exist_ok=True, parents=True)
+-        self._data_dir = data_dir
++        self._data_dir = Path(data_dir) if isinstance(data_dir, str) else data_dir
+ 
+         # Формируем путь к части датасета
+-        split_dir = self._data_dir / part
+-        index = self._get_or_load_index(split_dir) # Передаем split_dir
+-
+-        super().__init__(index, *args, **kwargs)
++        filtered_index = []
++        if split.startswith('train'):
++            [item for item in self._get_or_load_index(self._data_dir / split) if 'train' in Path(item['path']).parent.name]
++        elif split == 'val':
++            filtered_index = [item for item in self._get_or_load_index(split) if 'dev' in Path(item['path']).parent.name]
++        elif split == 'test':
++            filtered_index = [item for item in self._get_or_load_index(split) if 'test' in Path(item['path']).parent.name]
+ 
++        super().__init__(filtered_index, *args, **kwargs)
+ 
+ 
+-# class LibrispeechDataset_RU(BaseDataset):
+-#     def __init__(self, part, data_dir=None, *args, **kwargs):
+-#         assert part in URL_LINKS or part == "train_all"
+-
+-#         if data_dir is None:
+-#             data_dir = ROOT_PATH / "data" / "librispeech_russian"
+-#             data_dir.mkdir(exist_ok=True, parents=True)
+-#         self._data_dir = data_dir
+-
+-#         if part == "train_all":
+-#             index = sum(
+-#                 [
+-#                     self._get_or_load_index(part)
+-#                     for part in URL_LINKS
+-#                     if "train" in part  # Check if "train" is in the part name
+-#                 ],
+-#                 [],
+-#             )
+-#         else:
+-#             index = self._get_or_load_index(part)
+ 
+-#         super().__init__(index, *args, **kwargs)
+ 
+     # def _load_part(self, part):
+     #     arch_path = self._data_dir / f"{part}.tar.gz"
+@@ -81,19 +77,50 @@ class LibrispeechDataset_RU(BaseDataset):
+             mapping[file_id] = item['text'] #item.get('text',"")
+         return mapping
+ 
+-    def _get_or_load_index(self, part):
+-        index_path = self._data_dir / f"{part}_index.json"
+-        split_dir = self._data_dir / part
++    # def _get_or_load_index(self, part):
++    #     index_path = self._data_dir / f"{part}_index.json"
++    #     split_dir = self._data_dir / part
++
++    #     if index_path.exists() and split_dir.exists() and any(split_dir.iterdir()):
++    #         with index_path.open() as f:
++    #             return json.load(f)
++
++    #     logging.info(f"Creating index for {part}")
++    #     index = self._create_index(split_dir)
++    #     with index_path.open("w") as f:
++    #         json.dump(index, f, indent=2)
++    #     return index
+ 
+-        if index_path.exists() and split_dir.exists() and any(split_dir.iterdir()):
++    def _get_or_load_index(self, split_dir): # Принимаем полный путь к директории split
++        index_path = split_dir / "index.json" # index.json в директории split
++
++        if index_path.exists() and any(split_dir.iterdir()): # Проверяем существование index.json и наличие файлов в директории split
+             with index_path.open() as f:
+                 return json.load(f)
+ 
+-        logging.info(f"Creating index for {part}")
++        logging.info(f"Creating index for {split_dir.name}") # Выводим имя директории split
+         index = self._create_index(split_dir)
+         with index_path.open("w") as f:
+             json.dump(index, f, indent=2)
+         return index
++    
++
++    def _create_index(self, split_dir):
++        index = []
++        for audio_file in split_dir.glob("*/*/*.flac"): # Предполагаем, что аудиофайлы находятся в поддиректориях split_dir
++            text_file = audio_file.parent / f"{audio_file.stem}.txt"
++            with text_file.open() as f:
++                text = f.read().strip()
++
++            t_info = torchaudio.info(str(audio_file))
++            audio_len = t_info.num_frames / t_info.sample_rate
++            index.append({
++                "path": str(audio_file),
++                "text": text,
++                "audio_len": audio_len
++            })
++
++        return index
+ 
+     def _create_index(self, split_dir):
+         index = []
+diff --git a/Audio/03. ASR/src/model/deepspeech2.py b/Audio/03. ASR/src/model/deepspeech2.py
+index 9c3a706..4f921aa 100644
+--- a/Audio/03. ASR/src/model/deepspeech2.py	
++++ b/Audio/03. ASR/src/model/deepspeech2.py	
+@@ -3,7 +3,7 @@ import torch.nn as nn
+ import torch.nn.functional as F
+ 
+ class DeepSpeech2(nn.Module):
+-    def __init__(self, num_classes, rnn_hidden_size=512, num_rnn_layers=3):
++    def __init__(self, n_tokens, rnn_hidden_size=512, num_rnn_layers=3):
+         super(DeepSpeech2, self).__init__()
+ 
+         # 2D Convolutional Layer
+@@ -20,7 +20,7 @@ class DeepSpeech2(nn.Module):
+                           bidirectional=True)
+         
+         # Fully Connected Layer
+-        self.fc = nn.Linear(rnn_hidden_size * 2, num_classes) # 2x for bidirectional GRU
++        self.fc = nn.Linear(rnn_hidden_size * 2, n_tokens) # 2x for bidirectional GRU
+ 
+     def forward(self, x):
+         # Convolutional Layers

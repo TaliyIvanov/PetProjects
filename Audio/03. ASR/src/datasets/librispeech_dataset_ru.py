@@ -18,43 +18,39 @@ URL_LINKS = {
 # Настройка логирования
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 
-class LibrispeechDataset_RU(BaseDataset):
-    def __init__(self, part, data_dir=None, *args, **kwargs):
-        if data_dir is None:
-            data_dir = ROOT_PATH / "data" / "librispeech_russian"
-            data_dir.mkdir(exist_ok=True, parents=True)
-        self._data_dir = data_dir
-
-        # Формируем путь к части датасета
-        split_dir = self._data_dir / part
-        index = self._get_or_load_index(split_dir) # Передаем split_dir
-
-        super().__init__(index, *args, **kwargs)
-
-
-
 # class LibrispeechDataset_RU(BaseDataset):
 #     def __init__(self, part, data_dir=None, *args, **kwargs):
-#         assert part in URL_LINKS or part == "train_all"
-
 #         if data_dir is None:
 #             data_dir = ROOT_PATH / "data" / "librispeech_russian"
 #             data_dir.mkdir(exist_ok=True, parents=True)
-#         self._data_dir = data_dir
+#         self._data_dir = Path(data_dir) if isinstance(data_dir, str) else data_dir
 
-#         if part == "train_all":
-#             index = sum(
-#                 [
-#                     self._get_or_load_index(part)
-#                     for part in URL_LINKS
-#                     if "train" in part  # Check if "train" is in the part name
-#                 ],
-#                 [],
-#             )
-#         else:
-#             index = self._get_or_load_index(part)
+#         # Формируем путь к части датасета
+#         split_dir = self._data_dir / part
+#         index = self._get_or_load_index(split_dir) # Передаем split_dir
 
 #         super().__init__(index, *args, **kwargs)
+
+class LibrispeechDataset_RU(BaseDataset):
+    def __init__(self, split, data_dir, *args, **kwargs):
+        if data_dir is None:
+            data_dir = ROOT_PATH / "data" / "librispeech_russian"
+            data_dir.mkdir(exist_ok=True, parents=True)
+        self._data_dir = Path(data_dir) if isinstance(data_dir, str) else data_dir
+
+        # Формируем путь к части датасета
+        filtered_index = []
+        if split.startswith('train'):
+            [item for item in self._get_or_load_index(self._data_dir / split) if 'train' in Path(item['path']).parent.name]
+        elif split == 'val':
+            filtered_index = [item for item in self._get_or_load_index(split) if 'dev' in Path(item['path']).parent.name]
+        elif split == 'test':
+            filtered_index = [item for item in self._get_or_load_index(split) if 'test' in Path(item['path']).parent.name]
+
+        super().__init__(filtered_index, *args, **kwargs)
+
+
+
 
     # def _load_part(self, part):
     #     arch_path = self._data_dir / f"{part}.tar.gz"
@@ -81,18 +77,49 @@ class LibrispeechDataset_RU(BaseDataset):
             mapping[file_id] = item['text'] #item.get('text',"")
         return mapping
 
-    def _get_or_load_index(self, part):
-        index_path = self._data_dir / f"{part}_index.json"
-        split_dir = self._data_dir / part
+    # def _get_or_load_index(self, part):
+    #     index_path = self._data_dir / f"{part}_index.json"
+    #     split_dir = self._data_dir / part
 
-        if index_path.exists() and split_dir.exists() and any(split_dir.iterdir()):
+    #     if index_path.exists() and split_dir.exists() and any(split_dir.iterdir()):
+    #         with index_path.open() as f:
+    #             return json.load(f)
+
+    #     logging.info(f"Creating index for {part}")
+    #     index = self._create_index(split_dir)
+    #     with index_path.open("w") as f:
+    #         json.dump(index, f, indent=2)
+    #     return index
+
+    def _get_or_load_index(self, split_dir): # Принимаем полный путь к директории split
+        index_path = split_dir / "index.json" # index.json в директории split
+
+        if index_path.exists() and any(split_dir.iterdir()): # Проверяем существование index.json и наличие файлов в директории split
             with index_path.open() as f:
                 return json.load(f)
 
-        logging.info(f"Creating index for {part}")
+        logging.info(f"Creating index for {split_dir.name}") # Выводим имя директории split
         index = self._create_index(split_dir)
         with index_path.open("w") as f:
             json.dump(index, f, indent=2)
+        return index
+    
+
+    def _create_index(self, split_dir):
+        index = []
+        for audio_file in split_dir.glob("*/*/*.flac"): # Предполагаем, что аудиофайлы находятся в поддиректориях split_dir
+            text_file = audio_file.parent / f"{audio_file.stem}.txt"
+            with text_file.open() as f:
+                text = f.read().strip()
+
+            t_info = torchaudio.info(str(audio_file))
+            audio_len = t_info.num_frames / t_info.sample_rate
+            index.append({
+                "path": str(audio_file),
+                "text": text,
+                "audio_len": audio_len
+            })
+
         return index
 
     def _create_index(self, split_dir):

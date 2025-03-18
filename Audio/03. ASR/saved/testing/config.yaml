@@ -1,0 +1,93 @@
+model:
+  _target_: src.model.DeepSpeech2
+  n_tokens: 33
+  rnn_hidden_size: 512
+  num_rnn_layers: 3
+writer:
+  _target_: src.logger.WandBWriter
+  project_name: pytorch_template_asr
+  entity: null
+  run_name: testing
+  mode: online
+  loss_names:
+  - loss
+  log_checkpoints: false
+  id_length: 8
+  run_id: v4ae340b
+metrics:
+  train: []
+  inference:
+  - _target_: src.metrics.BeamSearchCERMetric
+    name: CER_(BeamSearch)
+  - _target_: src.metrics.BeamSearchWERMetric
+    name: WER_(BeamSearch)
+datasets:
+  train:
+    _target_: src.datasets.LibrispeechDataset_RU
+    data_dir: /media/talium/1DA5AE943A305AF1/DataSciense/Projects/PetProjects/Audio/03.
+      ASR/data
+    split: train
+    instance_transforms: ${transforms.instance_transforms.train}
+  val:
+    _target_: src.datasets.LibrispeechDataset_RU
+    data_dir: /media/talium/1DA5AE943A305AF1/DataSciense/Projects/PetProjects/Audio/03.
+      ASR/data
+    split: val
+    instance_transforms: ${transforms.instance_transforms.inference}
+  test:
+    _target_: src.datasets.LibrispeechDataset_RU
+    data_dir: /media/talium/1DA5AE943A305AF1/DataSciense/Projects/PetProjects/Audio/03.
+      ASR/data
+    split: test
+    instance_transforms: ${transforms.instance_transforms.inference}
+dataloader:
+  _target_: torch.utils.data.DataLoader
+  batch_size: 2
+  num_workers: 2
+  pin_memory: true
+transforms:
+  instance_transforms:
+    train:
+      get_spectrogram:
+        _target_: torchaudio.transforms.MelSpectrogram
+        sample_rate: 16000
+      audio:
+        _target_: torchvision.transforms.v2.Compose
+        transforms:
+        - _target_: src.transforms.wav_augs.Gain
+    inference:
+      get_spectrogram:
+        _target_: torchaudio.transforms.MelSpectrogram
+        sample_rate: 16000
+  batch_transforms:
+    train: null
+    inference: null
+optimizer:
+  _target_: torch.optim.AdamW
+  lr: 0.0003
+lr_scheduler:
+  _target_: torch.optim.lr_scheduler.OneCycleLR
+  max_lr: 0.01
+  pct_start: 0.1
+  steps_per_epoch: ${trainer.epoch_len}
+  epochs: ${trainer.n_epochs}
+  anneal_strategy: cos
+loss_function:
+  _target_: src.loss.CTCLossWrapper
+text_encoder:
+  _target_: src.text_encoder.CTCTextEncoder
+trainer:
+  log_step: 50
+  n_epochs: 50
+  epoch_len: 200
+  device_tensors:
+  - spectrogram
+  - text_encoded
+  resume_from: null
+  device: auto
+  override: true
+  monitor: min val_WER_(Argmax)
+  save_period: 5
+  early_stop: ${trainer.n_epochs}
+  save_dir: saved
+  seed: 1
