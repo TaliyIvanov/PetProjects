@@ -19,6 +19,7 @@ Audio/01.Talium_TTS/TTSenv
 Audio/01.Talium_TTS/TTSenv310
 Audio/02. DL in Audio HSE (ASR, TTS)/DLAvenv
 Audio/03. ASR/ASRvenv
+Audio/04.ASR_DeepSpeech2_English/ASRvenv
 
 # Исключить папку с временными файлами модели для обучения
 Audio/01.Talium_TTS/run
