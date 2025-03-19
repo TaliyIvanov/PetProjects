@@ -1,6 +1,6 @@
 import torch
 from torch import nn
-from torch.nn.init as init
+import torch.nn.init as init
 
 class CNNLayer(nn.Module):
     """
@@ -23,7 +23,7 @@ class CNNLayer(nn.Module):
         super(CNNLayer, self).__init__()
         self.cnn = nn.Conv2d(in_channels, out_channels, kernel_size, stride, padding)
         self.batch_norm = nn.BatchNorm2d(num_features = out_channels)
-        self.activation = nn.Hardtahn()
+        self.activation = nn.Hardtanh()
         # Инициализация весов свёрточного слоя с помощью Xavier initialization
         init.xavier_normal_(self.cnn.weight, gain=1)
         # Инициализация смещения свёрточного слоя нулями
@@ -128,5 +128,74 @@ class RNNLayer(nn.Module):
         out = self.activation(x)
         return out
 
+
 class DeepSpeech2(nn.Module):
-     pass
+    """
+    Implementation of the DeepSpeech2 architecture for speech recognition.
+
+    This model uses a combination of convolutional and recurrent layers to process
+    speech input and predict character probabilities.
+    """
+
+    def __init__(self, input_features):
+        """
+        Initializes the DeepSpeech2 model.
+
+        Args:
+            input_features (int): Number of input features (e.g., Mel-frequency cepstral coefficients).
+        """
+        super(DeepSpeech2, self).__init__()
+
+        # Convolutional layers
+        self.cnn_layers = nn.ModuleList([
+            CNNLayer(1, 32, (11, 11), (2, 2)),  # First CNN layer with stride (2,2) for downsampling
+            CNNLayer(32, 32, (11, 11), (1, 1), padding=(5, 0)),  # Subsequent CNN layers with stride (1,1) and padding
+            CNNLayer(32, 32, (11, 11), (1, 1), padding=(5, 0)),
+        ])
+
+        # Calculate feature dimension after CNN layers
+        features = (input_features - 11) // 2 + 1  # Feature dimension calculation after the first CNN layer with stride (2,2)
+        self.features = features
+
+        # Recurrent layers (Bidirectional LSTMs)
+        self.rnn_layers = nn.ModuleList([
+            RNNLayer(
+                in_channels=64 * self.features if i == 0 else 330 * 2,  # Input channels depend on the layer (first layer takes CNN output)
+                hidden_units=330  # Number of hidden units in each LSTM layer
+            ) for i in range(3)  # 3 Bidirectional LSTM layers
+        ])
+
+        # Classifier layer
+        self.classifier = nn.Sequential(nn.Linear(330 * 2, 28))  # Linear layer to map RNN output to vocabulary size (assumed to be 28)
+
+    def forward(self, x, sequence_lengths):
+        """
+        Performs a forward pass through the DeepSpeech2 model.
+
+        Args:
+            x (torch.Tensor): Input tensor of shape (batch_size, features, time).
+            sequence_lengths (torch.Tensor): Lengths of the input sequences.
+
+        Returns:
+            dict: A dictionary containing the log probabilities and their lengths.
+        """
+
+        x = x.unsqueeze(1)  # Add channel dimension: (batch_size, 1, features, time)
+
+        # Apply CNN layers
+        for cnn_layer in self.cnn_layers:
+            x, sequence_lengths = cnn_layer(x, sequence_lengths)  # Pass sequence lengths through CNN layers for length adjustments
+
+        # Reshape and transpose for RNN layers
+        x = x.view(x.shape[0], x.shape[1] * x.shape[2], x.shape[3])  # (batch_size, channels * features, time)
+        x = x.transpose(1, 2)  # (batch_size, time, channels * features)
+
+        # Apply RNN layers
+        for rnn_layer in self.rnn_layers:
+            x = rnn_layer(x, sequence_lengths)  # Pass sequence lengths to handle variable-length sequences
+
+        # Apply classifier
+        x = self.classifier(x)  # (batch_size, time, vocab_size)
+
+        # Compute log softmax and return
+        return {"log_probs": nn.functional.log_softmax(x, dim=-1), "log_probs_length": sequence_lengths}

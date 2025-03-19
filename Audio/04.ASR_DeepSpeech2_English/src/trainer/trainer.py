@@ -40,7 +40,12 @@ class Trainer(BaseTrainer):
             metric_funcs = self.metrics["train"]
             self.optimizer.zero_grad()
 
-        outputs = self.model(**batch)
+        # outputs = self.model(**batch) # иной принцип подачи батча (мне еще предстоит с этим разобраться)
+        outputs = self.model(
+            x = batch["spectrogram"],
+            sequence_lengths = batch["spectrogram_length"]
+        )
+
         batch.update(outputs)
 
         all_losses = self.criterion(**batch)
@@ -92,9 +97,9 @@ class Trainer(BaseTrainer):
     def log_predictions(
         self, text, log_probs, log_probs_length, audio_path, examples_to_log=10, **batch
     ):
-        # TODO add beam search
-        # Note: by improving text encoder and metrics design
-        # this logging can also be improved significantly
+        bs_results = []  
+        for log_probs_line in log_probs: 
+           bs_results.append(self.text_encoder.ctc_beam_search(log_probs_line.exp().detach().numpy() , 5)[0])
 
         argmax_inds = log_probs.cpu().argmax(-1).numpy()
         argmax_inds = [

@@ -1,2 +1,2 @@
 _target_: src.model.DeepSpeech2
-n_feats: 128
+input_features: 128

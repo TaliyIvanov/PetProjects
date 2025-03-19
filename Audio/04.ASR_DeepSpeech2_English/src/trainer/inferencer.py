@@ -122,13 +122,16 @@ class Inferencer(BaseTrainer):
         """
         # TODO change inference logic so it suits ASR assignment
         # and task pipeline
-
+    
         batch = self.move_batch_to_device(batch)
         batch = self.transform_batch(batch)  # transform batch on device -- faster
 
-        outputs = self.model(**batch)
+        outputs = self.model(
+            x = batch["spectrogram"],
+            sequence_lengths = batch["spectrogram_length"]
+        )
         batch.update(outputs)
-
+       
         if metrics is not None:
             for met in self.metrics["inference"]:
                 metrics.update(met.name, met(**batch))
@@ -136,21 +139,21 @@ class Inferencer(BaseTrainer):
         # Some saving logic. This is an example
         # Use if you need to save predictions on disk
 
-        batch_size = batch["logits"].shape[0]
+        batch_size = batch["log_probs"].shape[0]
         current_id = batch_idx * batch_size
 
         for i in range(batch_size):
             # clone because of
             # https://github.com/pytorch/pytorch/issues/1995
-            logits = batch["logits"][i].clone()
-            label = batch["labels"][i].clone()
+            logits = batch["log_probs"][i].clone()
+            label = batch["text"][i]
             pred_label = logits.argmax(dim=-1)
 
             output_id = current_id + i
 
             output = {
                 "pred_label": pred_label,
-                "label": label,
+                "text": label,
             }
 
             if self.save_path is not None:
