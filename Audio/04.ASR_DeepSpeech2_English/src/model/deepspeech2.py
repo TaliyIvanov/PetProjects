@@ -150,7 +150,7 @@ class DeepSpeech2(nn.Module):
         self.cnn_layers = nn.ModuleList([
             CNNLayer(1, 32, (11, 11), (2, 2)),  # First CNN layer with stride (2,2) for downsampling
             CNNLayer(32, 32, (11, 11), (1, 1), padding=(5, 0)),  # Subsequent CNN layers with stride (1,1) and padding
-            CNNLayer(32, 32, (11, 11), (1, 1), padding=(5, 0)),
+            CNNLayer(32, 64, (11, 11), (1, 1), padding=(5, 0)),
         ])
 
         # Calculate feature dimension after CNN layers

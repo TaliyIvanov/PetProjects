@@ -97,9 +97,12 @@ class Trainer(BaseTrainer):
     def log_predictions(
         self, text, log_probs, log_probs_length, audio_path, examples_to_log=10, **batch
     ):
+        
+        # Note: by improving text encoder and metrics design
+        # this logging can also be improved significantly
         bs_results = []  
         for log_probs_line in log_probs: 
-           bs_results.append(self.text_encoder.ctc_beam_search(log_probs_line.exp().detach().numpy() , 5)[0])
+           bs_results.append(self.text_encoder.ctc_beam_search(log_probs_line.exp().detach().cpu().numpy() , 5)[0])
 
         argmax_inds = log_probs.cpu().argmax(-1).numpy()
         argmax_inds = [
@@ -111,15 +114,16 @@ class Trainer(BaseTrainer):
         tuples = list(zip(argmax_texts, text, argmax_texts_raw, audio_path))
 
         rows = {}
-        for pred, target, raw_pred, audio_path in tuples[:examples_to_log]:
+        for bs_pred, pred, target, raw_pred, audio_path in tuples[:examples_to_log]:
             target = self.text_encoder.normalize_text(target)
-            wer = calc_wer(target, pred) * 100
-            cer = calc_cer(target, pred) * 100
+
+            wer = calc_wer(target, bs_pred[0]) * 100
+            cer = calc_cer(target, bs_pred[0]) * 100
 
             rows[Path(audio_path).name] = {
                 "target": target,
                 "raw prediction": raw_pred,
-                "predictions": pred,
+                "predictions": bs_pred,
                 "wer": wer,
                 "cer": cer,
             }

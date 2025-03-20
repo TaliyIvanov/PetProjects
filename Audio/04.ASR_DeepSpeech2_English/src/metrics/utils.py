@@ -13,4 +13,4 @@ def calc_cer(target_text, predicted_text) -> float:
 def calc_wer(target_text, predicted_text) -> float:
     if len(target_text) == 0:
         return 1
-    return editdistance(target_text.split(), predicted_text.split())/len(target_text.split())
+    return editdistance.eval(target_text.split(), predicted_text.split())/len(target_text.split())
