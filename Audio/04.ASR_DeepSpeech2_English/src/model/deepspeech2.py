@@ -62,7 +62,7 @@ class CNNLayer(nn.Module):
         x = self.cnn(x)
         x = self.batch_norm(x)
         out = self.activation(x)
-        return out, new_sequence_lengths
+        return x, new_sequence_lengths
 
 
 class RNNLayer(nn.Module):
@@ -82,7 +82,7 @@ class RNNLayer(nn.Module):
     def __init__(self, in_channels, hidden_units):
         super(RNNLayer, self).__init__()
         self.rnn = nn.LSTM(in_channels, hidden_units, bidirectional=True, batch_first=True)
-        self.dropout = nn.Dropout(p=0.5)
+        self.dropout = nn.Dropout(p=0.3)
         self.layer_norm = nn.LayerNorm(hidden_units * 2)  # hidden_units * 2 because of bidirectional LSTM
         self.activation = nn.Hardtanh()
         self._apply_xavier_initialization()
@@ -125,8 +125,8 @@ class RNNLayer(nn.Module):
 
         x = self.dropout(x)
         x = self.layer_norm(x)
-        out = self.activation(x)
-        return out
+        x = self.activation(x)
+        return x
 
 
 class DeepSpeech2(nn.Module):

@@ -40,12 +40,13 @@ class Trainer(BaseTrainer):
             metric_funcs = self.metrics["train"]
             self.optimizer.zero_grad()
 
-        # outputs = self.model(**batch) # иной принцип подачи батча (мне еще предстоит с этим разобраться)
+        #### !!!! в оригк тут в модельку давали полностью батч, но я подругому делаю и не даю ток что надо )))))
+        #outputs = self.model(**batch)
         outputs = self.model(
             x = batch["spectrogram"],
             sequence_lengths = batch["spectrogram_length"]
         )
-
+       
         batch.update(outputs)
 
         all_losses = self.criterion(**batch)
@@ -61,6 +62,7 @@ class Trainer(BaseTrainer):
         # update metrics for each loss (in case of multiple losses)
         for loss_name in self.config.writer.loss_names:
             metrics.update(loss_name, batch[loss_name].item())
+        
 
         for met in metric_funcs:
             metrics.update(met.name, met(**batch))
@@ -97,7 +99,7 @@ class Trainer(BaseTrainer):
     def log_predictions(
         self, text, log_probs, log_probs_length, audio_path, examples_to_log=10, **batch
     ):
-        
+      
         # Note: by improving text encoder and metrics design
         # this logging can also be improved significantly
         bs_results = []  
@@ -111,19 +113,20 @@ class Trainer(BaseTrainer):
         ]
         argmax_texts_raw = [self.text_encoder.decode(inds) for inds in argmax_inds]
         argmax_texts = [self.text_encoder.ctc_decode(inds) for inds in argmax_inds]
-        tuples = list(zip(argmax_texts, text, argmax_texts_raw, audio_path))
+        tuples = list(zip(bs_results,argmax_texts, text, argmax_texts_raw, audio_path))
 
         rows = {}
         for bs_pred, pred, target, raw_pred, audio_path in tuples[:examples_to_log]:
             target = self.text_encoder.normalize_text(target)
 
+   
             wer = calc_wer(target, bs_pred[0]) * 100
             cer = calc_cer(target, bs_pred[0]) * 100
 
             rows[Path(audio_path).name] = {
                 "target": target,
                 "raw prediction": raw_pred,
-                "predictions": bs_pred,
+                "predictions": bs_pred[0],
                 "wer": wer,
                 "cer": cer,
             }

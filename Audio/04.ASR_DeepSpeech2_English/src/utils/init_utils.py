@@ -156,6 +156,8 @@ def setup_saving_and_logging(config):
         setup_logging(save_dir, append=True)
     else:
         setup_logging(save_dir, append=False)
+    
+    # Creates or retrieves a logger named "train". Sets the log level for the "train" logger to DEBUG.
     logger = logging.getLogger("train")
     logger.setLevel(logging.DEBUG)
 
