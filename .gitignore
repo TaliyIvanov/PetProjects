@@ -28,7 +28,7 @@ Audio/01.Talium_TTS/run
 # ClassicML
 # Исключить папку с данными
 ClassicML/01.A-Money/data
-ClassicML/01.A-Money/catboost_info
+ClassicML/01.A-Money/'catboost_info'
 ClassicML/01.A-Money/.ipynb_checkpoints
 # Исключить виртуальное окружение
 ClassicML/01.A-Money/Classicenv
