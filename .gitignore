@@ -7,7 +7,11 @@ CV/01.Classification_Images/test_pics/
 
 # Исключить виртуальное окружение
 CV/01.Classification_Images/CIenv/
-
+CV/02.ML trainings 3.0 Yandex /yandexenv
+CV/02.ML trainings 3.0 Yandex /hw_01_mnist_classification/*.npy
+CV/02.ML trainings 3.0 Yandex /hw_01_mnist_classification/*.json
+CV/02.ML trainings 3.0 Yandex /hw_01_mnist_classification/FashionMNIST/
+CV/02.ML trainings 3.0 Yandex /hw_01_mnist_classification/MNIST/
 
 # Audio
 # Исключить папку с данными
