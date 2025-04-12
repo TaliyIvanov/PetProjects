@@ -1,7 +1,7 @@
-# 1
-# do not change the code in the block below
-# __________start of block__________
 import numpy as np
+cell_size = 7
+
+# 1
 def compute_sobel_gradients_two_loops(image):
     # Get image dimensions
     height, width = image.shape
@@ -35,11 +35,7 @@ def compute_sobel_gradients_two_loops(image):
             gradient_y[i, j] = np.sum(sobel_y * region)
          
     return gradient_x, gradient_y
-
-
 # 2
-
-import numpy as np # for your convenience when you copy the code to the contest
 def compute_gradient_magnitude(sobel_x, sobel_y):
     '''
     Compute the magnitude of the gradient given the x and y gradients.
@@ -55,7 +51,7 @@ def compute_gradient_magnitude(sobel_x, sobel_y):
         
     return magnitude
 
-import numpy as np # for your convenience when you copy the code to the contest
+# 3
 def compute_gradient_direction(sobel_x, sobel_y):
     '''
     Compute the direction of the gradient given the x and y gradients. Angle must be in degrees in the range (-180; 180].
@@ -71,11 +67,8 @@ def compute_gradient_direction(sobel_x, sobel_y):
     gradient_direction = np.degrees(np.arctan2(sobel_y, sobel_x))
     return gradient_direction
 
-# 3
+# 4
 
-import numpy as np
-
-cell_size = 7
 def compute_hog(image, pixels_per_cell=(cell_size, cell_size), bins=9):
     # 1. Convert the image to grayscale if it's not already (assuming the image is in RGB or BGR)
     if len(image.shape) == 3:
@@ -92,34 +85,26 @@ def compute_hog(image, pixels_per_cell=(cell_size, cell_size), bins=9):
     cell_height, cell_width = pixels_per_cell
     n_cells_x = image.shape[1] // cell_width # 28 // 7 = 4
     n_cells_y = image.shape[0] // cell_height # 28 // 7 = 4
-
     histograms = np.zeros((n_cells_y, n_cells_x, bins)) # shape = (4,4,9)
-    bin_width = 180 / bins
+
+    # Define bin edges for histogram (9 bins from -180 to 180 degrees)
+    bin_edges = np.linspace(-180, 180, bins + 1, endpoint=True) # [-180, -140, -100, ..., 140, 180]
+
 
     for i in range(n_cells_y):
-        for j in range(n_cells_x):
-            # получаем участок градиентов, соответствующий текущей ячейке
-            mag_cell = magnitude[i * cell_height:(i+1) * cell_height,
-                                 j * cell_width:(j+1) * cell_width]
-            dir_cell = direction[i * cell_height:(i+1) * cell_height,
-                                 j * cell_width:(j+1) * cell_width]
-            
-            # приводим углы к диапазону [0, 180)
-            dir_cell = np.mod(dir_cell, 180)
+        for j in range(n_cells_x):# Extract the magnitudes and directions for the current cell
+            cell_magnitude = magnitude[i * cell_height:(i + 1) * cell_height,
+                                      j * cell_width:(j + 1) * cell_width]
+            cell_direction = direction[i * cell_height:(i + 1) * cell_height,
+                                      j * cell_width:(j + 1) * cell_width]
 
-            # теперь двигаемся по пикселям внутри ячейки
-            for y in range(cell_height):
-                for x in range(cell_width):
-                    angle = dir_cell[y, x]
-                    mag = mag_cell[y, x]
+            # Compute histogram for the cell
+            hist, _ = np.histogram(cell_direction, bins=bin_edges, weights=cell_magnitude)
+            histograms[i, j, :] = hist
 
-                    # индекс нижнего и верхнего бина (интерполяция по 2 ближайшим бинам)
-                    bin_idx  = int(angle // bin_width)
-                    bin_next = (bin_idx + 1) % bins
-
-                    # сколько % отнести в следующий бин
-                    ratio = (angle % bin_width) / bin_width
-                    histograms[i, j, bin_idx] += mag * (1 - ratio)
-                    histograms[i, j, bin_next] += mag * ratio
+            # Normalize the histogram so the sum of bins equals 1
+            hist_sum = np.sum(hist)
+            if hist_sum > 0:  # Avoid division by zero
+                histograms[i, j, :] = hist / hist_sum
 
     return histograms
