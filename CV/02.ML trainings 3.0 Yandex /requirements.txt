@@ -3,3 +3,4 @@ torch==2.1.2
 torchvision==0.16.2
 matplotlib==3.7.3
 ipython==8.18.1
+opencv-python==4.8.1.78
