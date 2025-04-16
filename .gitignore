@@ -19,6 +19,9 @@ CV/02.ML trainings 3.0 Yandex /hw_02_edge_detection/FashionMNIST
 Audio/01.Talium_TTS/data/
 Audio/03. ASR/data
 Audio/03. ASR/wandb
+Audio/05.MorzeDecoder/data
+
+
 # Исключить виртуальное окружение
 Audio/01.Talium_TTS/TTSenv
 Audio/01.Talium_TTS/TTSenv310
