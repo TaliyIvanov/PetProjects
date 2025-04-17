@@ -20,7 +20,7 @@ Audio/01.Talium_TTS/data/
 Audio/03. ASR/data
 Audio/03. ASR/wandb
 Audio/05.MorzeDecoder/data
-
+Audio/05.MorzeDecoder/morzeenv
 
 # Исключить виртуальное окружение
 Audio/01.Talium_TTS/TTSenv
