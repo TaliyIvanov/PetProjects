@@ -1,9 +1,11 @@
 # ComputerVision
 # Исключить папку с данными
 CV/01.Classification_Images/data/
+CV/03.Semantic Segmentation/data/
 
 # Исключить папку с данными
 CV/01.Classification_Images/test_pics/
+CV/02.ML trainings 3.0 Yandex /hw_06/best_pictures/
 
 # Исключить виртуальное окружение
 CV/01.Classification_Images/CIenv/
@@ -13,6 +15,7 @@ CV/02.ML trainings 3.0 Yandex /hw_01_mnist_classification/*.json
 CV/02.ML trainings 3.0 Yandex /hw_01_mnist_classification/FashionMNIST/
 CV/02.ML trainings 3.0 Yandex /hw_01_mnist_classification/MNIST/
 CV/02.ML trainings 3.0 Yandex /hw_02_edge_detection/FashionMNIST
+CV/03.Semantic Segmentation/semanticenv/
 
 # Audio
 # Исключить папку с данными
@@ -28,6 +31,7 @@ Audio/01.Talium_TTS/TTSenv310
 Audio/02. DL in Audio HSE (ASR, TTS)/DLAvenv
 Audio/03. ASR/ASRvenv
 Audio/04.ASR_DeepSpeech2_English/ASRvenv
+
 
 # Исключить папку с временными файлами модели для обучения
 Audio/01.Talium_TTS/run
