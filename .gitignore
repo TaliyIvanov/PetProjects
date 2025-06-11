@@ -11,7 +11,9 @@ CV/02.ML trainings 3.0 Yandex /hw_06/best_pictures/
 # Временно не буду проектик пушить
 CV/04. Chroma Key/chroma-key-venv/
 
-
+CV/05.ObjectDetection/od-venv/
+CV/05.ObjectDetection/models/
+CV/05.ObjectDetection/data/
 
 # Исключить виртуальное окружение
 CV/01.Classification_Images/CIenv/
