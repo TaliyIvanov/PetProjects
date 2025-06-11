@@ -7,6 +7,12 @@ CV/03.Semantic Segmentation/data/
 CV/01.Classification_Images/test_pics/
 CV/02.ML trainings 3.0 Yandex /hw_06/best_pictures/
 
+
+# Временно не буду проектик пушить
+CV/04. Chroma Key/chroma-key-venv/
+
+
+
 # Исключить виртуальное окружение
 CV/01.Classification_Images/CIenv/
 CV/02.ML trainings 3.0 Yandex /yandexenv
