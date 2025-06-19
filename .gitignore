@@ -15,6 +15,13 @@ CV/05.ObjectDetection/od-venv/
 CV/05.ObjectDetection/models/
 CV/05.ObjectDetection/data/
 
+CV/06.CarNumbersWithYolo/data/
+CV/06.CarNumbersWithYolo/models/
+CV/06.CarNumbersWithYolo/cnenv/
+
+
+
+
 # Исключить виртуальное окружение
 CV/01.Classification_Images/CIenv/
 CV/02.ML trainings 3.0 Yandex /yandexenv
