@@ -96,7 +96,6 @@ while True:
                     total_counts.append(id)
                     cv2.line(frame, pt1, pt2, (0, 255, 0), 3)
 
-        # Update history
         track_history[id] = (cx, cy)
 
     # Deleting disappeared IDs
