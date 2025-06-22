@@ -1,0 +1,9 @@
+ultralytics>=8.0.20
+easyocr>=1.7.1
+numpy>=1.23.0
+opencv-python>=4.7.0.72
+cvzone>=1.5.6
+torch>=2.0.0
+torchvision>=0.15.0
+matplotlib>=3.5.0  # Optional: for visualization
+scikit-image>=0.19.0  # Optional: image preprocessing
