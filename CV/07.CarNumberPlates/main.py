@@ -5,6 +5,9 @@ import numpy as np
 import sort as s
 import easyocr
 import os
+import math
+
+from utils import warp_perspective
 
 # create numbers plates
 cascade_path = os.path.join(cv2.data.haarcascades, "haarcascade_russian_plate_number.xml")
@@ -35,6 +38,12 @@ if cap is None or not cap.isOpened():
 # load model
 model = YOLO('models/yolov8n.pt')
 
+# load number reader
+number_reader = easyocr.Reader(['ru'], gpu=True)
+count = 0
+number_dict = {}
+
+
 # pipeline
 while True:
     success, frame = cap.read()
@@ -48,6 +57,16 @@ while True:
     gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
 
     # detect car with Yolo8n
+    detected_cars = []
+    car_detection = model(frame, verbose=False)[0] # verbose=False
+    for detection in car_detection.boxes.data.tolist():
+        # print(detection)
+        x1, y1, x2, y2, score, class_id = detection
+        if int(class_id) == 2: # car
+            detected_cars.append([x1, y1, x2, y2, score])
+            conf = math.ceil(score*100)/100
+            cv2.rectangle(frame, (int(x1), int(y1)), (int(x2), int(y2)), (0, 255, 0), 1)
+            cv2.putText(frame, f'Car, {conf}', (int(x1), int(y1)-5), cv2.FONT_HERSHEY_COMPLEX_SMALL, 1, (0, 255, 0), 1)
 
     # detect the number plate with opencv
     numberPlates = nPlateCascade.detectMultiScale(gray, 1.1, 10)
@@ -56,11 +75,34 @@ while True:
         if area > minarea:
             cv2.rectangle(frame, (x,y), (x+w, y+h), numbercolor, 1)
             cv2.putText(frame, 'NumberPlate', (x, y-5), cv2.FONT_HERSHEY_COMPLEX_SMALL, 1, numbercolor, 1)
-            frame_number = frame[y:y+h, x:x+w, :]
-            
+            pts = [(x,y),(x+w,y), (x+w,y+h), (x,y+h)]
+            # frame_number = frame[y:y+h, x:x+w, :]
+            # correction perspective
+            frame_number = warp_perspective(frame, pts)
             cv2.imshow('Number', frame_number) # show numberplate
 
             # prepair numberplate for easyOCR
+            # height_number, width_number = frame_number.shape[:2]
+            # frame_number = cv2.resize(frame_number, (int(width_number * 2), int(height_number * 2)))
+            frame_number_gray = cv2.cvtColor(frame_number, cv2.COLOR_BGR2GRAY)
+            frame_number_prep = cv2.adaptiveThreshold(frame_number_gray,
+                                                         255,
+                                                         cv2.ADAPTIVE_THRESH_GAUSSIAN_C,
+                                                         cv2.THRESH_BINARY,
+                                                         11,
+                                                         2)
+            # show prepaire number
+            cv2.imshow('Prepaired number', frame_number_prep) # show numberplate
+
+            # OCR the number text with easyOCR
+            readed_numbers = number_reader.readtext(frame_number)
+            for (bbox, text, prob) in readed_numbers:
+                if prob > 0.6:
+                    print(f'Detected number: {text.upper()}')
+                    number_dict[count] = text
+                    count += 1
+
+
 
     cv2.imshow('frame', frame)
 
@@ -74,7 +116,7 @@ cv2.destroyAllWindows()
 
 
 
-# OCR the number text with easyOCR
+
 
 # write file.txt
 
