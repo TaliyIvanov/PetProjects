@@ -7,7 +7,7 @@ import easyocr
 import os
 import math
 
-from utils import warp_perspective
+from utils import warp_perspective, correct_common_ocr_errors, clean_plate, correct_number, format_license
 
 # create numbers plates
 cascade_path = os.path.join(cv2.data.haarcascades, "haarcascade_russian_plate_number.xml")
@@ -97,8 +97,18 @@ while True:
             # OCR the number text with easyOCR
             readed_numbers = number_reader.readtext(frame_number)
             for (bbox, text, prob) in readed_numbers:
-                if prob > 0.6:
-                    print(f'Detected number: {text.upper()}')
+                if len(text) > 5:
+                    text = text.upper()
+                    text = correct_common_ocr_errors(text)
+                    text = clean_plate(text)
+
+                    if not text:
+                        continue  # Пропускаем, если вернулось None
+                    
+                    if not correct_number(text):
+                        continue
+                    text = format_license(text)
+                    print(f'Number: {text} Score: {math.ceil((prob*100))/100}')
                     number_dict[count] = text
                     count += 1
 
