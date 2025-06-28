@@ -160,3 +160,75 @@ def format_license(text):
 
     return license_plate_
 
+# func to check number in database
+def check_plate_in_db(plate_number, database_ref):
+    try:
+        # Debugs
+        # print(f"DEBUG: Checking plate_number (RAW): '{plate_number}'")
+        # print(f"DEBUG: Length of plate_number: {len(plate_number)}")
+        # print(f"DEBUG: ASCII codes: {[ord(c) for c in plate_number]}")
+        ref_path = f'number_plates/{plate_number}'        
+        # print(f"DEBUG: Full RTDB path: '{ref_path}'")
+
+        ref = database_ref.reference(ref_path)
+        data = ref.get()
+        # return data # if need to check parking payment
+        # Debug
+        # print(f"DEBUG: Data returned from RTDB for '{ref_path}': {data}")
+
+        if data is not None:
+            return True # found number plate
+        else:
+            return False # number plate not found
+        
+    except Exception as e:
+        print(f'Error accessing Firestore: {e}')
+        return False
+    
+
+# func to check number in database
+def check_plate_in_db(plate_number, database_ref):
+    """
+    Checks if a license plate number exists in the Firebase Realtime Database.
+
+    Args:
+        plate_number (str): The license plate number to search for.
+        database_ref: A reference to the Firebase Realtime Database obtained from the Firebase SDK.
+
+    Returns:
+        bool: True if the license plate number is found in the database, False otherwise, or if an error occurs.
+
+    Raises:
+        Exception:  In case of an error accessing the database, the error is caught, printed to the console, and the function returns False.
+
+    Details:
+        The function uses the provided `database_ref` to access the database.
+        It constructs the database path using the format `number_plates/{plate_number}`.
+        Then, it attempts to retrieve data from this path.
+        If data exists (is not None), the function returns True, indicating that the license plate number was found.
+        If no data is found (is None), the function returns False.
+        If any error occurs during database access (e.g., authorization issues, network problems), the function catches the exception, prints an error message, and returns False.
+        The commented-out print statements are for debugging and can be uncommented to check input data, constructed paths, and returned data.
+    """
+    try:
+        # Debugs
+        # print(f"DEBUG: Checking plate_number (RAW): '{plate_number}'")
+        # print(f"DEBUG: Length of plate_number: {len(plate_number)}")
+        # print(f"DEBUG: ASCII codes: {[ord(c) for c in plate_number]}")
+        ref_path = f'number_plates/{plate_number}'
+        # print(f"DEBUG: Full RTDB path: '{ref_path}'")
+
+        ref = database_ref.reference(ref_path)
+        data = ref.get()
+        # return data # 1 or 0 if need to check parking payment
+        # Debug
+        # print(f"DEBUG: Data returned from RTDB for '{ref_path}': {data}")
+
+        if data is not None:
+            return True # found number plate
+        else:
+            return False # number plate not found
+
+    except Exception as e:
+        print(f'Error accessing Firestore: {e}')
+        return False

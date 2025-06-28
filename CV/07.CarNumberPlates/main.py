@@ -6,8 +6,19 @@ import sort as s
 import easyocr
 import os
 import math
+import firebase_admin
+from firebase_admin import credentials
+from firebase_admin import db
+from utils import warp_perspective, correct_common_ocr_errors, clean_plate, correct_number, format_license, check_plate_in_db
 
-from utils import warp_perspective, correct_common_ocr_errors, clean_plate, correct_number, format_license
+# initial firebase
+path_to_cert = 'cert/carnumbersdatabase-firebase-adminsdk-fbsvc-62eaa5f57b.json'
+if not firebase_admin._apps:
+    cred = credentials.Certificate(path_to_cert)
+    firebase_admin.initialize_app(cred, {
+        'databaseURL': 'https://carnumbersdatabase-default-rtdb.europe-west1.firebasedatabase.app' # URL Realtime Database
+    })
+rtdb = db
 
 # create numbers plates
 cascade_path = os.path.join(cv2.data.haarcascades, "haarcascade_russian_plate_number.xml")
@@ -21,19 +32,6 @@ cap = cv2.VideoCapture('data/test_video.mp4')
 if cap is None or not cap.isOpened():
     print("Video not found or cannot open. Please check the path.")
     exit()
-# check video without any tranforms (before do anything)
-# while True:
-#     success, frame = cap.read()
-#     if not success:
-#         print("No frame is read")
-#         break # Exit the loop if no frame is read
-
-#     cv2.imshow('Frame', frame)
-
-#     if cv2.waitKey(1) & 0xFF == ord('q'):
-#         print('Exiting...')
-#         break
-# cv2.destroyAllWindows()
 
 # load model
 model = YOLO('models/yolov8n.pt')
@@ -108,10 +106,15 @@ while True:
                     if not correct_number(text):
                         continue
                     text = format_license(text)
-                    print(f'Number: {text} Score: {math.ceil((prob*100))/100}')
+                    access = str()
+                    # check number plate in db
+                    if check_plate_in_db(text, rtdb):
+                        access = 'Allowed'
+                    else:
+                        access = 'DENIED!'
+                    print(f'Detected Number: {text}, Access: {access}')
                     number_dict[count] = text
                     count += 1
-
 
 
     cv2.imshow('frame', frame)
@@ -121,12 +124,3 @@ while True:
         break
 
 cv2.destroyAllWindows()
-
-
-
-
-
-
-
-# write file.txt
-
