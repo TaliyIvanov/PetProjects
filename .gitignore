@@ -24,6 +24,8 @@ CV/07.CarNumberPlates/models/
 CV/07.CarNumberPlates/cvenv/
 CV/07.CarNumberPlates/cert/
 
+CV/08.Segmentation/data/
+CV/08.Segmentation/task/
 
 
 # Исключить виртуальное окружение
