@@ -1,0 +1,17 @@
+# install OS
+FROM python:3.10-slim
+# workdir
+WORKDIR /app
+
+# copy requirements
+COPY requirements.txt .
+
+# install from requirements.txt
+RUN pip install --no-cache-dir -r requirements.txt
+
+# copy all other files
+COPY main.py .
+
+ENV NVIDIA_VISIBLE_DEVICES all
+
+CMD ["python", "main.py"]
