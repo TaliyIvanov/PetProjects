@@ -4,27 +4,29 @@ import os
 # Load the image
 path_to_image = 'data/data_sources/ventura/all.tif'
 img = cv2.imread(path_to_image)
+
+if img is None:
+    raise FileNotFoundError(f"Image not found at {path_to_image}")
+
 img_w, img_h = img.shape[:2]
 
 # Patch size
-patch_w, patch_h = 512, 512
+patch_size = 512
+overlap = 0.5
+step = int(patch_size * (1 - overlap)) # 256 for 50% overlap
 
 # path to output
 output_dit = 'data/dataset/masks' # check it
 
 # counter for patch numbering
-patch_id = 64 # write your number if you have more files
+patch_id = 49 # write your number if you have more files
 
 # Loop through the image with step size = patch size
-for x in range(0, patch_h*(img_h // patch_h), patch_h//2):
-    for y in range(0, patch_w*(img_w // patch_w), patch_w//2):
-
-        # Ensure patch does not exceed image boundaries
-        x_end = min(x + patch_w//2, img_w)
-        y_end = min(y + patch_h//2, img_h)
+for x in range(0, img_h - patch_size + 1, step):
+    for y in range(0, img_w - patch_size + 1, step):
 
         # crop the patch
-        patch = img[y:y_end, x:x_end]
+        patch = img[y:y + patch_size, x:x + patch_size]
 
         # save the patch
         patch_filename = f'{output_dit}/{patch_id}.png'
