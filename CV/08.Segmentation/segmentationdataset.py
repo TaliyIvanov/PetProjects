@@ -1,6 +1,7 @@
 import cv2
 import torch
 from torch.utils.data import Dataset
+import numpy as np
 
 class SegmentationDataset(Dataset):
     def __init__(self, image_paths, mask_paths, transform=None):
@@ -19,6 +20,7 @@ class SegmentationDataset(Dataset):
         image = cv2.imread(image_path)
         image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
         mask = cv2.imread(mask_path, cv2.IMREAD_GRAYSCALE)
+        mask = (mask > 0).astype(np.uint8) # binary mask
 
         # Apply transforms
         if self.transform:

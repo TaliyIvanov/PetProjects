@@ -6,3 +6,4 @@ opencv-python==4.9.0.80
 albumentations==1.4.4
 pandas==2.2.2
 scikit-learn==1.4.2
+segmentation_models_pytorch
