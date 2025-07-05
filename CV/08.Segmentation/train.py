@@ -12,15 +12,16 @@ from metrics import compute_iou
 from sklearn.model_selection import train_test_split
 from torch.optim.lr_scheduler import ReduceLROnPlateau
 import matplotlib.pyplot as plt
-
+from visualize_predictions import visualize_predictions
 
 
 # configs
 root_dir_images = 'data/dataset/images'
 root_dir_masks = 'data/dataset/masks'
 
-model_type = "Unet"  # Unet, FPN, DeepLabV3Plus, UnetPlusPlus
+model_type = "Linknet"  # Unet, FPN, DeepLabV3Plus, UnetPlusPlus
 encoder = 'resnet34'
+weights = 'imagenet'
 num_classes = 1
 batch_size = 4
 lr = 1e-3
@@ -33,7 +34,7 @@ save_path = f'best_model_{model_type.lower()}.pth'
 ModelClass = getattr(smp, model_type)
 model = ModelClass(
     encoder_name = encoder,
-    encoder_weights = 'imagenet',
+    encoder_weights = weights,
     in_channels = 3,
     classes=num_classes
 )
@@ -192,7 +193,6 @@ plt.legend()
 plt.tight_layout()
 plt.show()
 
-
 # Evaluate on test set
 model.eval()
 test_iou = 0
@@ -217,3 +217,6 @@ avg_test_loss = test_loss / len(test_loader)
 avg_test_iou = test_iou / len(test_loader)
 
 print(f"[Test] Loss: {avg_test_loss:.4f} | IoU: {avg_test_iou:.4f}")
+
+# visualize model preds
+visualize_predictions(model, test_loader, device, num_samples=5)
