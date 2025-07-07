@@ -1,10 +1,10 @@
-# main_visualize.py
+# to check augmentations
 
 import os
 from glob import glob
-from transforms import train_transform
-from segmentationdataset import SegmentationDataset
-from visualize_augmentations import visualize_segmentation
+from src.transforms.val_transform import train_transform
+from datasets import SegmentationDataset
+from src.utils.utils import visualize_segmentation
 
 # Путь к данным
 image_dir = 'data/dataset/images'

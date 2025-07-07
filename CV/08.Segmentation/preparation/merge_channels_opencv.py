@@ -1,6 +1,6 @@
 import cv2
 import numpy as np
-from utils import normalize
+from src.utils.utils import normalize
 
 # santarosa
 # paths to data

@@ -2,18 +2,20 @@
 import torch
 import torch.nn as nn
 from torch.utils.data import DataLoader
+from torch.optim.lr_scheduler import ReduceLROnPlateau
+
 from tqdm import tqdm
 import segmentation_models_pytorch as smp
-from segmentationdataset import SegmentationDataset
-from transforms import train_transform, val_transform
 from glob import glob
 import os
-from metrics import compute_iou
 from sklearn.model_selection import train_test_split
-from torch.optim.lr_scheduler import ReduceLROnPlateau
 import matplotlib.pyplot as plt
-from visualize_predictions import visualize_predictions
 
+# from project files
+from datasets import SegmentationDataset
+from metrics import compute_iou
+from src.utils.utils import calculate_class_weights, visualize_predictions
+from src.transforms.val_transform import train_transform, val_transform
 
 # configs
 root_dir_images = 'data/dataset/images'
@@ -25,7 +27,7 @@ weights = 'imagenet'
 num_classes = 1
 batch_size = 4
 lr = 1e-3
-EPOCHS = 30
+EPOCHS = 100
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
 save_path = f'best_model_{model_type.lower()}.pth'
@@ -41,19 +43,6 @@ model = ModelClass(
 
 model.to(device)
 # print(model)
-
-# Loss & Metrics
-loss_fn = nn.BCEWithLogitsLoss() if num_classes == 1 else nn.CrossEntropyLoss()
-optimizer = torch.optim.Adam(model.parameters(), lr=lr)
-metrics_fn = compute_iou
-scheduler = ReduceLROnPlateau(
-    optimizer,
-    mode='max',
-    factor=0.5,
-    patience=2,
-    verbose=True,
-    min_lr=1e-6
-)
 
 # Data
 image_paths = sorted(glob(os.path.join(root_dir_images, '*.png')))
@@ -79,6 +68,22 @@ test_dataset = SegmentationDataset(test_imgs, test_masks, transform=val_transfor
 train_loader = DataLoader(train_dataset, batch_size=batch_size, shuffle=True, num_workers=4)
 val_loader = DataLoader(val_dataset, batch_size=batch_size, shuffle=False, num_workers=4)
 test_loader = DataLoader(test_dataset, batch_size=batch_size, shuffle=False, num_workers=4)
+
+# pos weights
+pos_weight = calculate_class_weights(train_masks, train_dataset, device=device)
+
+# Loss & Metrics
+loss_fn = nn.BCEWithLogitsLoss()
+optimizer = torch.optim.Adam(model.parameters(), lr=lr)
+metrics_fn = compute_iou
+scheduler = ReduceLROnPlateau(
+    optimizer,
+    mode='max',
+    factor=0.5,
+    patience=2,
+    verbose=True,
+    min_lr=1e-6
+)
 
 # Lists for metrics
 train_losses = []

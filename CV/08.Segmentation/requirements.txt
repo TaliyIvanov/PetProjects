@@ -7,3 +7,6 @@ albumentations==1.4.4
 pandas==2.2.2
 scikit-learn==1.4.2
 segmentation_models_pytorch
+wandb
+comet_ml
+hydra-core

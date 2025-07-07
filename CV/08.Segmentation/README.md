@@ -21,3 +21,8 @@ I want to study and use next tools in this project:
 ### Links
 - [Object-Based Augmentation for Building Semantic Segmentation: Ventura and
 Santa Rosa Case Study](https://openaccess.thecvf.com/content/ICCV2021W/ILDAV/papers/Illarionova_Object-Based_Augmentation_for_Building_Semantic_Segmentation_Ventura_and_Santa_Rosa_ICCVW_2021_paper.pdf)
+
+
+25/07/07:
+[Epoch 30] Val Loss: 0.0687 | IoU: 0.7983
+[Test] Loss: 0.0759 | IoU: 0.7674

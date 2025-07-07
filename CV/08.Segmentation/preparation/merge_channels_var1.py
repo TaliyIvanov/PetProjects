@@ -2,7 +2,7 @@ import rasterio
 import numpy as np
 import matplotlib.pyplot as plt
 from PIL import Image
-from utils import normalize
+from src.utils.utils import normalize
 
 # santarosa
 # paths to data
