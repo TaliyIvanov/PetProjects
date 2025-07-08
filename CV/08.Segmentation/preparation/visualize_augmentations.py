@@ -3,7 +3,7 @@
 import os
 from glob import glob
 from src.transforms.val_transform import train_transform
-from datasets import SegmentationDataset
+from src.datasets.datasets import SegmentationDataset
 from src.utils.utils import visualize_segmentation
 
 # Путь к данным

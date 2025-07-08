@@ -12,10 +12,11 @@ from sklearn.model_selection import train_test_split
 import matplotlib.pyplot as plt
 
 # from project files
-from datasets import SegmentationDataset
-from metrics import compute_iou
+from src.datasets.datasets import SegmentationDataset
+from src.metrics import compute_iou
 from src.utils.utils import calculate_class_weights, visualize_predictions
-from src.transforms.val_transform import train_transform, val_transform
+from src.transforms.val_transform import val_transform
+from src.transforms.train_transform import train_transform
 
 # configs
 root_dir_images = 'data/dataset/images'
