@@ -1,6 +1,6 @@
 import torch
 
-def compute_iou(preds, masks, threshold=0.5):
+def compute_iou(preds: torch.Tensor, masks: torch.Tensor, threshold: float=0.5) -> float:
     # Применяем sigmoid к логитам и применяем порог
     preds = torch.sigmoid(preds)  # Применяем сигмоид
     preds = (preds > threshold).float()

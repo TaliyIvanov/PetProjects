@@ -1,0 +1,14 @@
+lr: 1e-3
+epochs: 30
+optimizer:
+  _target_: torch.optim.Adam
+  lr: ${..lr}
+scheduler:
+  _target_: torch.optim.lr_scheduler.ReduceLROnPlateu
+  mode: max
+  factor: 0.5
+  patience: 2
+  verbose: True
+  min_lr: 1e-6
+loss_fn:
+  _target_: torch.nn.BCEWithLogitsLoss

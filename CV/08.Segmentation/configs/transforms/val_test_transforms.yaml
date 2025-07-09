@@ -1,0 +1,4 @@
+_target_: srs.transforms.train_transform.val_test_transform
+
+mean: list = (0.3527, 0.3395, 0.2912)
+std: list = (0.1384, 0.1237, 0.1199)

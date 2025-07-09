@@ -1,0 +1,3 @@
+_target_: src.logger.cometml.CometMLWriter
+api_key: "your_apikey"
+project_name: "binary segmentation"
