@@ -8,7 +8,7 @@ Mean: tensor([0.3527, 0.3395, 0.2912])
 Std: tensor([0.1384, 0.1237, 0.1199])
 """
 
-def train_transform(
+def train_transforms(
         horizontal_flip_p: float = 0.5,
         vertical_flip_p: float = 0.5,
         random_rotate: float = 0.5,

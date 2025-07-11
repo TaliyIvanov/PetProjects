@@ -15,8 +15,8 @@ import matplotlib.pyplot as plt
 from src.datasets.datasets import SegmentationDataset
 from src.metrics import compute_iou
 from src.utils.utils import calculate_class_weights, visualize_predictions
-from src.transforms.val_test_transform import val_test_transform
-from src.transforms.train_transform import train_transform
+from src.transforms.val_test_transforms import val_test_transform
+from src.transforms.train_transforms import train_transform
 
 # configs
 root_dir_images = 'data/dataset/images'
@@ -41,7 +41,7 @@ model = ModelClass(
     in_channels = 3,
     classes=num_classes
 )
-
+ 
 model.to(device)
 # print(model)
 

@@ -1,0 +1,4 @@
+_target_: src.transforms.val_test_transforms.val_test_transforms
+
+mean: [0.3527, 0.3395, 0.2912]
+std: [0.1384, 0.1237, 0.1199]

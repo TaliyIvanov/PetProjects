@@ -1,7 +1,7 @@
 root_dir_images: "data/dataset/images"
 root_dir_masks: "data/dataset/masks"
-test_size: 0.15
-val_size: 0.33
+test_size: 0.25
+val_size: 0.4
 random_state: 42
 batch_size: 4
 num_workers: 4

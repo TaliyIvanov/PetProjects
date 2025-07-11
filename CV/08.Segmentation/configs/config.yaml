@@ -3,8 +3,8 @@ defaults:
   - data: dataset
   - model: linknet
   - train: train
-  - transforms: train_transforms
   - logger: wandb
+  - transforms: transforms
 
 seed: 42
 device: cuda

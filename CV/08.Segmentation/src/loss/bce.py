@@ -1,6 +1,6 @@
 import torch.nn as nn
 
-class BCEWithLogitsLoss(nn.module):
+class BCEWithLogitsLoss(nn.Module):
     def __init__(self):
         super().__init__()
         self.loss_fn = nn.BCEWithLogitsLoss()
