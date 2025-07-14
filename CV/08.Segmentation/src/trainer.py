@@ -1,4 +1,4 @@
-# src/trainer.py
+from comet_ml import Experiment
 import torch
 import torch.nn as nn
 from torch.utils.data import DataLoader
@@ -82,7 +82,7 @@ def train(cfg: DictConfig) -> None:
     scheduler = hydra.utils.instantiate(cfg.train.scheduler, optimizer=optimizer)
     loss_fn = hydra.utils.instantiate(cfg.train.loss_fn)
     # logger
-    logger = None #hydra.utils.instantiate(cfg.logger)
+    logger = hydra.utils.instantiate(cfg.logger)
 
     # 4. functions
 
@@ -92,7 +92,7 @@ def train(cfg: DictConfig) -> None:
         train_loss = 0.0
         pbar = tqdm(dataloader, desc=f"[Epoch {step + 1}/{cfg.train.epochs}] Train")
 
-        for images, masks in pbar:
+        for i, (images, masks) in enumerate(pbar):
             images = images.to(device)
             masks = masks.to(device)
             masks = masks.unsqueeze(1).float()
@@ -107,9 +107,11 @@ def train(cfg: DictConfig) -> None:
             optimizer.step()
 
             train_loss += loss.item()
-            avg_train_loss = train_loss / len(dataloader)
-            pbar.set_postfix({"loss":avg_train_loss})
-        #logger.log_metrics({"train_loss":avg_train_loss}, step=step)
+            running_avg_train_loss = train_loss / (i + 1)
+            pbar.set_postfix({"loss":running_avg_train_loss})
+
+        avg_train_loss = train_loss / len(dataloader)
+        logger.log_metrics({"train_loss":avg_train_loss}, step=step)
         return avg_train_loss
 
     # val
@@ -136,8 +138,33 @@ def train(cfg: DictConfig) -> None:
 
         avg_val_loss = val_loss / len(dataloader)
         avg_iou = total_iou / len(dataloader)
-        #logger.log_metrics({"val_loss":avg_val_loss, "val_iou": avg_iou})
+        logger.log_metrics({"val_loss":avg_val_loss, "val_iou": avg_iou}, step=step)
         return {"val_loss": avg_val_loss, "val_iou": avg_iou}
+
+    def preds_on_test(model, test_loader, loss_fn, device):
+        model.eval()
+        test_iou = 0
+        test_loss = 0
+
+        with torch.no_grad():
+            for images, masks in test_loader:
+                images = images.to(device)
+                masks = masks.to(device)
+                masks = masks.unsqueeze(1).float()
+
+                preds = model(images)
+                loss = loss_fn(preds, masks)
+                test_loss += loss.item()
+
+                preds_sigmoid = torch.sigmoid(preds)
+                preds_binary = (preds_sigmoid > 0.5).float()
+                iou = compute_iou(preds_binary, masks)
+                test_iou += iou.item()
+
+        avg_test_loss = test_loss / len(test_loader)
+        avg_test_iou = test_iou / len(test_loader)
+
+        return {"test_loss": avg_test_loss, "test_iou": avg_test_iou}
 
     
     # 5. Train loop
@@ -152,4 +179,13 @@ def train(cfg: DictConfig) -> None:
 
             torch.save(model.state_dict(), model_filename)
             print(f"model saved to {os.getcwd()}/{model_filename} (IoU improved to {best_iou:.4f})")
-    #logger.end()
+    
+    best_model_state = torch.load(model_filename)
+    model.load_state_dict(best_model_state)
+
+    tests_results = preds_on_test(model, test_loader, loss_fn, device)
+    print("Test results on the best model:")
+    print(tests_results)
+
+    logger.log_metrics(tests_results, step=cfg.train.epochs)
+    logger.end()

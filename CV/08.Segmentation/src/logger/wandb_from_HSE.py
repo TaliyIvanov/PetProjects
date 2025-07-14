@@ -38,13 +38,13 @@ class WandBWriter:
                 offline, log locally.
         """
         try:
-            import wandb
+            import src.logger.wandb_from_HSE as wandb_from_HSE
 
-            wandb.login()
+            wandb_from_HSE.login()
 
             self.run_id = run_id
 
-            wandb.init(
+            wandb_from_HSE.init(
                 project=project_name,
                 entity=entity,
                 config=project_config,
@@ -54,7 +54,7 @@ class WandBWriter:
                 mode=mode,
                 save_code=kwargs.get("save_code", False),
             )
-            self.wandb = wandb
+            self.wandb = wandb_from_HSE
 
         except ImportError:
             logger.warning("For use wandb install it via \n\t pip install wandb")

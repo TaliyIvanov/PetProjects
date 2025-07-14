@@ -1,5 +1,5 @@
 lr: 1e-3
-epochs: 5
+epochs: 50
 optimizer:
   _target_: torch.optim.Adam
   lr: ${..lr}

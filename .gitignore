@@ -26,6 +26,10 @@ CV/07.CarNumberPlates/cert/
 
 CV/08.Segmentation/data/
 CV/08.Segmentation/task/
+CV/08.Segmentation/task/
+CV/08.Segmentation/configs/logger/cometml.yaml
+CV/08.Segmentation/configs/logger/wandb.yaml
+CV/08.Segmentation/outputs
 
 
 # Исключить виртуальное окружение

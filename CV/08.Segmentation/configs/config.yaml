@@ -3,7 +3,7 @@ defaults:
   - data: dataset
   - model: linknet
   - train: train
-  - logger: wandb
+  - logger: cometml
   - transforms: transforms
 
 seed: 42
