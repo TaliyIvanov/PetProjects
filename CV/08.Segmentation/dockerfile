@@ -1,5 +1,11 @@
-# install OS
-FROM python:3.10-slim
+# docker compose up --build: Сначала пересобирает образ segmentation-api-dev, а затем запускает контейнер на его основе. Используйте это после изменения Dockerfile или requirements.txt.
+# docker compose up: Просто запускает контейнер, используя уже существующий, ранее собранный образ. Используйте это для обычного запуска и когда вы меняли только .py файлы.
+# docker compose down: Останавливает и удаляет контейнеры, сети, созданные командой up.
+
+# check the version of your pytorch, where you trained your model
+# if used GPU
+# Link https://hub.docker.com/r/pytorch/pytorch
+FROM pytorch/pytorch:1.13.1-cuda11.6-cudnn8-runtime
 # workdir
 WORKDIR /app
 
@@ -10,8 +16,13 @@ COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
 # copy all other files
-COPY main.py .
+COPY . .
 
 ENV NVIDIA_VISIBLE_DEVICES all
 
-CMD ["python", "main.py"]
+# open port where will work api
+EXPOSE 8000
+
+# comand for star Uvicorn server
+# --host 0.0.0.0 makes the server accessible from outside the container
+CMD ["uvicorn", "scripts.api:app", "--host", "0.0.0.0", "--port", "8000"]
