@@ -11,7 +11,12 @@ import os
 from src.predict import load_model, predict_mask
 
 # configs
-MODEL_PATH = "best_model_linknet.pt"
+MODEL_PATH = "best_model_linknet.pth"
+MODEL_CONFIG_PATH = "configs/model/linknet.yaml"
+
+# для возможности будущей доработки
+# MODEL_PATH = os.getenv("MODEL_PATH", "models/best_model_linknet.pth")
+# MODEL_CONFIG_PATH = os.getenv("MODEL_CONFIG_PATH", "configs/model/linknet.yaml")
 
 # initialize app
 app = FastAPI(title="Building Segmentation API")
@@ -22,14 +27,14 @@ app.add_middleware(
     allow_origins=["*"], # в проде необходимо будет указать конкретный домен
     allow_credentials=True,
     allow_methods=["*"],
-    allow_heards=["*"],
+    allow_headers=["*"],
 )
 
-model = load_model(MODEL_PATH)
+model = load_model(MODEL_PATH, MODEL_CONFIG_PATH)
 
 # static files for our frontend
 os.makedirs("templates", exist_ok=True)
-app.mount("/static", StaticFiles(directory="templates"), name="statis")
+app.mount("/static", StaticFiles(directory="templates"), name="static")
 
 # endpoints
 @app.get("/", include_in_schema=False)

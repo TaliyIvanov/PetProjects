@@ -83,8 +83,9 @@ segmentation_project/
 ├── outputs/                 # Выходные данные (логи, обученные модели) - Hydra управляет
 │   └── ...                  # Hydra создаст структуру внутри при запуске
 ├── scripts/                 # Скрипты для запуска (обучение, предсказание, API)
+│   ├── __init__.py
 │   ├── train.py             # Скрипт для обучения (точка входа)
-│   ├── pred_image.py        # Скрипт для предсказания одного изображения
+│   ├── pred_image.py        # Скрипт для предсказания одного изображения # пока не разработан
 │   └── api.py               # Скрипт для запуска FastAPI
 ├── requirements.txt          # Зависимости проекта
 ├── Dockerfile                # Инструкции для создания Docker-образа
@@ -99,3 +100,14 @@ segmentation_project/
 25/07/07:
 [Epoch 30] Val Loss: 0.0687 | IoU: 0.7983
 [Test] Loss: 0.0759 | IoU: 0.7674
+
+
+### Docker
+- docker compose up --build: Сначала пересобирает образ segmentation-api-dev, а затем запускает контейнер на его основе. Используйте это после изменения Dockerfile или requirements.txt.
+- docker compose up: Просто запускает контейнер, используя уже существующий, ранее собранный образ. Используйте это для обычного запуска и когда вы меняли только .py файлы.
+- docker compose down: Останавливает и удаляет контейнеры, сети, созданные командой up.
+- после сборки контейнера убедиться, что сервер запущен: docker compose logs segmentation_service
+
+### After build and up Docker:
+http://localhost:8000/docs
+http://localhost:8000/redoc

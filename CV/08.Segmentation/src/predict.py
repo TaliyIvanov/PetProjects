@@ -3,6 +3,8 @@ import numpy as np
 from PIL import Image
 import albumentations as A
 from albumentations.pytorch import ToTensorV2
+import hydra
+from omegaconf import OmegaConf
 
 # Сначала определю трансформации глобально
 # в будущем необходимо поправить, чтобы они подтягивались из конфига
@@ -14,11 +16,18 @@ PREDICT_TRANSFORMS = A.Compose([
     ToTensorV2()
 ])
 
-device = "cuda" if torch.cuda.is_available else "cpu"
+device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
-def load_model(model_path: str) -> torch.nn.Module:
+def load_model(model_path: str, model_config_path: str) -> torch.nn.Module:
     print(f"Loading model from {model_path} to {device}")
-    model = torch.load(model_path, map_location=torch.device(device))
+    # конфиги модели
+    model_conf = OmegaConf.load(model_config_path)
+    # скелет модели
+    model = hydra.utils.instantiate(model_conf)
+    # веса модели
+    state_dict = torch.load(model_path, map_location=device)
+    # применяем веса к "скелету" модели
+    model.load_state_dict(state_dict)
     model.to(device)
     model.eval()
     print("Model loaded succesfully!")

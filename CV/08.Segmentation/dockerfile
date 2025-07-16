@@ -1,7 +1,3 @@
-# docker compose up --build: Сначала пересобирает образ segmentation-api-dev, а затем запускает контейнер на его основе. Используйте это после изменения Dockerfile или requirements.txt.
-# docker compose up: Просто запускает контейнер, используя уже существующий, ранее собранный образ. Используйте это для обычного запуска и когда вы меняли только .py файлы.
-# docker compose down: Останавливает и удаляет контейнеры, сети, созданные командой up.
-
 # check the version of your pytorch, where you trained your model
 # if used GPU
 # Link https://hub.docker.com/r/pytorch/pytorch
