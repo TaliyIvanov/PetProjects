@@ -12,7 +12,10 @@ COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
 # copy all other files
-COPY . .
+COPY ./src ./src
+COPY ./scripts ./scripts
+COPY ./configs ./configs
+COPY ./best_model_linknet.pth ./best_model_linknet.pth
 
 ENV NVIDIA_VISIBLE_DEVICES all
 
