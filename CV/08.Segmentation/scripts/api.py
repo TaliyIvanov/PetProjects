@@ -1,7 +1,7 @@
 # for local start: uvicorn scripts.api:app --reload
 
 import io
-from fastapi import FastAPI, File, UploadFile
+from fastapi import FastAPI, File, UploadFile, Request
 from fastapi.responses import StreamingResponse, FileResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.middleware.cors import CORSMiddleware
@@ -62,13 +62,14 @@ async def root():
     return FileResponse("templates/index.html")
 
 @app.post("/predict", tags=["Prediction"])
-async def predict(file: UploadFile = File(..., description="Спутниковый снимок 512х512 в формате PNG/JPEG")):
+async def predict(request: Request, file: UploadFile = File(..., description="Спутниковый снимок 512х512 в формате PNG/JPEG")):
     """Take image, return binary mask"""
     # 1. read the file
     contents = await file.read()
     input_image = Image.open(io.BytesIO(contents))
 
     # 2. predictions
+    model = request.app.state.model
     predicted_mask = await run_in_threadpool(predict_mask, model, input_image)
 
     # 3. convertations
