@@ -38,8 +38,6 @@ app.add_middleware(
 # create endpoint metrics
 instrumentator = Instrumentator().instrument(app)
 
-model = load_model(MODEL_PATH, MODEL_CONFIG_PATH)
-
 # static files for our frontend
 os.makedirs("templates", exist_ok=True)
 app.mount("/static", StaticFiles(directory="templates"), name="static")

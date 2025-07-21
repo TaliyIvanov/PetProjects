@@ -111,3 +111,5 @@ segmentation_project/
 ### After build and up Docker:
 http://localhost:8000/docs
 http://localhost:8000/redoc
+http://localhost:9090 - (Prometheus)
+http://localhost:3000 - (Grafana)
