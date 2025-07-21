@@ -8,7 +8,9 @@ services:
       - "8000:8000"
     # command: uvicorn main:app --host 0.0.0.0 --port 8000
     volumes:
-      - .:/app
+      - ./src:/app/src
+      - ./configs:/app/configs
+      - ./best_model_linknet.pth:/app/best_model_linknet.pth # подключаем веса модели, чтобы не вшивать в образ
     # depends_on:
     #   - airflow-webserver
 
@@ -36,14 +38,30 @@ services:
   #     - airflow-webserver
   #   command: scheduler
 
-  # prometheus:
-  #   image: prom/prometheus
-  #   volumes:
-  #     - ./prometheus.yml:/etc/prometheus/prometheus.yml
-  #   ports:
-  #     - "9090:9090"
+  prometheus:
+    image: prom/prometheus:v2.45.0
+    container_name: prometheus
+    restart: unless-stopped
+    volumes:
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml
+      - prometheus_data:/prometheus # for saves between starts
+    ports:
+      - "9090:9090"
+    depends_on:
+      - api
 
-  # grafana:
-  #   image: grafana/grafana
-  #   ports:
-  #     - "3000:3000"
+  grafana:
+    image: grafana/grafana:9.5.3
+    container_name: grafana
+    restart: unless-stopped
+    volumes:
+      - grafana_data:/var/lib/grafana
+    ports:
+      - "3000:3000"
+    depends_on:
+      - prometheus
+
+# volumes for save data
+volumes:
+  prometheus_data:
+  grafana_data:
