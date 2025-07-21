@@ -11,3 +11,4 @@ wandb
 comet_ml
 hydra-core
 python-multipart
+prometheus-fastapi-instrumentator
