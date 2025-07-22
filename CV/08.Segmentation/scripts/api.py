@@ -26,7 +26,7 @@ app = FastAPI(
     version="1.0.0",
     )
 
-# CORS
+# MIDDLEWARE (CORS)
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"], # в проде необходимо будет указать конкретный домен
@@ -34,9 +34,6 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
-
-# create endpoint metrics
-instrumentator = Instrumentator().instrument(app)
 
 # static files for our frontend
 os.makedirs("templates", exist_ok=True)
@@ -48,12 +45,8 @@ async def startup_event():
     print("Starting up... Loading model.")
     try:
         app.state.model = load_model(MODEL_PATH, MODEL_CONFIG_PATH)
-        print("Model load succesfully")
     except Exception as e:
         print(f"Fatal: Could not load model! Error: {e}")
-
-    # metrics for prometheus
-    instrumentator.expose(app)
 
 # endpoints
 @app.get("/", include_in_schema=False)
@@ -79,3 +72,6 @@ async def predict(request: Request, file: UploadFile = File(..., description="С
 
     # 4. returns
     return StreamingResponse(io.BytesIO(image_bytes), media_type="image/png")
+
+# create endpoint metrics
+Instrumentator().instrument(app).expose(app)
