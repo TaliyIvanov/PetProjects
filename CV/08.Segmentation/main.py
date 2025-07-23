@@ -1,1 +1,0 @@
-print('Docker container START')

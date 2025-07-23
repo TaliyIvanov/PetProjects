@@ -1,11 +1,11 @@
 # imports
+import albumentations as A
+import cv2
+import matplotlib.pyplot as plt
 import numpy as np
 import torch
 from torch.utils.data import DataLoader
 from tqdm import tqdm
-import matplotlib.pyplot as plt
-import albumentations as A
-import cv2
 
 
 # normalize to [0, 255]
@@ -15,6 +15,7 @@ def normalize(img):
     img /= img.max()
     img *= 255.0
     return img.astype(np.uint8)
+
 
 def calculate_class_weights(mask_paths, dataset, device="cpu", num_workers=4):
     """
@@ -40,12 +41,14 @@ def calculate_class_weights(mask_paths, dataset, device="cpu", num_workers=4):
         # Преобразуем в numpy array и подсчитываем пиксели
         masks_np = masks.cpu().numpy()  # Переносим на CPU, если GPU нет
         for mask_np in masks_np:
-            total_pixels += mask_np.size # Общее количество пикселей в маске
-            house_pixels += np.sum(mask_np) # Количество пикселей дома (класс 1)
+            total_pixels += mask_np.size  # Общее количество пикселей в маске
+            house_pixels += np.sum(mask_np)  # Количество пикселей дома (класс 1)
 
     non_house_pixels = total_pixels - house_pixels
     if house_pixels == 0:
-         return torch.tensor([1.0]).to(device) # если домов нет, ставим вес 1.0.  Это может быть артефакт данных.
+        return torch.tensor([1.0]).to(device)  # если домов нет,
+                                               # ставим вес 1.0.
+                                               # Это может быть артефакт данных.
     pos_weight = torch.tensor([non_house_pixels / house_pixels]).to(device)
     return pos_weight
 
@@ -77,18 +80,18 @@ def visualize_predictions(model, dataloader, device, num_samples=5):
                 # Показать 3 изображения: оригинал, ground truth, prediction
                 plt.subplot(num_samples, 3, count * 3 + 1)
                 plt.imshow(img)
-                plt.title('Image')
-                plt.axis('off')
+                plt.title("Image")
+                plt.axis("off")
 
                 plt.subplot(num_samples, 3, count * 3 + 2)
-                plt.imshow(true_mask, cmap='gray')
-                plt.title('Ground Truth')
-                plt.axis('off')
+                plt.imshow(true_mask, cmap="gray")
+                plt.title("Ground Truth")
+                plt.axis("off")
 
                 plt.subplot(num_samples, 3, count * 3 + 3)
-                plt.imshow(pred_mask, cmap='gray')
-                plt.title('Prediction')
-                plt.axis('off')
+                plt.imshow(pred_mask, cmap="gray")
+                plt.title("Prediction")
+                plt.axis("off")
 
                 count += 1
 
@@ -98,10 +101,12 @@ def visualize_predictions(model, dataloader, device, num_samples=5):
     plt.tight_layout()
     plt.show()
 
+
 # for visualize aigmentatuons data
 
+
 # Simple function to overlay mask on image for visualization
-def overlay_mask(image, mask, alpha=0.5, color=(0, 1, 0)): # Green overlay
+def overlay_mask(image, mask, alpha=0.5, color=(0, 1, 0)):  # Green overlay
     # Convert mask to 3 channels if needed, ensure boolean type
     mask_overlay = np.zeros_like(image, dtype=np.uint8)
     # Create a color overlay where mask is > 0
@@ -116,8 +121,7 @@ def visualize_segmentation(dataset, idx=0, samples=3):
     # Make a copy of the transform list to modify for visualization
     if isinstance(dataset.transform, A.Compose):
         vis_transform_list = [
-            t for t in dataset.transform
-            if not isinstance(t, (A.Normalize, A.ToTensorV2))
+            t for t in dataset.transform if not isinstance(t, A.Normalize | A.ToTensorV2)
         ]
         vis_transform = A.Compose(vis_transform_list)
     else:
@@ -128,15 +132,15 @@ def visualize_segmentation(dataset, idx=0, samples=3):
 
     # --- Get the original image and mask --- #
     original_transform = dataset.transform
-    dataset.transform = None # Temporarily disable for raw data access
+    dataset.transform = None  # Temporarily disable for raw data access
     image, mask = dataset[idx]
-    dataset.transform = original_transform # Restore
+    dataset.transform = original_transform  # Restore
 
     # Display original
     ax[0, 0].imshow(image)
     ax[0, 0].set_title("Original Image")
     ax[0, 0].axis("off")
-    ax[0, 1].imshow(mask, cmap='gray') # Show mask directly
+    ax[0, 1].imshow(mask, cmap="gray")  # Show mask directly
     ax[0, 1].set_title("Original Mask")
     ax[0, 1].axis("off")
     # ax[0, 1].imshow(overlay_mask(image, mask)) # Or show overlay
@@ -147,31 +151,33 @@ def visualize_segmentation(dataset, idx=0, samples=3):
         # Apply the visualization transform
         if vis_transform:
             augmented = vis_transform(image=image, mask=mask)
-            aug_image = augmented['image']
-            aug_mask = augmented['mask']
+            aug_image = augmented["image"]
+            aug_mask = augmented["mask"]
         else:
-            aug_image, aug_mask = image, mask # Should not happen normally
+            aug_image, aug_mask = image, mask  # Should not happen normally
 
         # Display augmented image and mask
         ax[i + 1, 0].imshow(aug_image)
-        ax[i + 1, 0].set_title(f"Augmented Image {i+1}")
+        ax[i + 1, 0].set_title(f"Augmented Image {i + 1}")
         ax[i + 1, 0].axis("off")
 
-        ax[i + 1, 1].imshow(aug_mask, cmap='gray') # Show mask directly
-        ax[i + 1, 1].set_title(f"Augmented Mask {i+1}")
+        ax[i + 1, 1].imshow(aug_mask, cmap="gray")  # Show mask directly
+        ax[i + 1, 1].set_title(f"Augmented Mask {i + 1}")
         ax[i + 1, 1].axis("off")
         # ax[i+1, 1].imshow(overlay_mask(aug_image, aug_mask)) # Or show overlay
         # ax[i+1, 1].set_title(f"Augmented Overlay {i+1}")
 
-
     plt.tight_layout()
     plt.show()
+
 
 # Assuming train_dataset is created with train_transform:
 # visualize_segmentation(train_dataset, samples=3)
 
 
-__all__ = ['normalize', 
-           'calculate_class_weights', 
-           'visualize_predictions', 
-           'visualize_segmentation']
+__all__ = [
+    "normalize",
+    "calculate_class_weights",
+    "visualize_predictions",
+    "visualize_segmentation",
+]

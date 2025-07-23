@@ -1,14 +1,13 @@
-import rasterio
 import numpy as np
-import matplotlib.pyplot as plt
+import rasterio
 from PIL import Image
 from src.utils.utils import normalize
 
 # santarosa
 # paths to data
-r_path = 'data/data_sources/santa_rosa/RED.tif'
-g_path = 'data/data_sources/santa_rosa/GRN.tif'
-b_path = 'data/data_sources/santa_rosa/BLUE.tif'
+r_path = "data/data_sources/santa_rosa/RED.tif"
+g_path = "data/data_sources/santa_rosa/GRN.tif"
+b_path = "data/data_sources/santa_rosa/BLUE.tif"
 
 # read channels santarosa
 with rasterio.open(r_path) as r:
@@ -21,7 +20,7 @@ with rasterio.open(b_path) as b:
     blue = b.read(1)
 
 # merge to RGB
-image = np.stack([red, green, blue], axis=-1) # H x W x 3
+image = np.stack([red, green, blue], axis=-1)  # H x W x 3
 
 # visualise if need to check
 # plt.imshow(image)
@@ -31,15 +30,15 @@ image = np.stack([red, green, blue], axis=-1) # H x W x 3
 image_norm = normalize(image)
 
 # save
-path_to_save = 'data/data_sources/santa_rosa/santa_rosa_rgd.png'
+path_to_save = "data/data_sources/santa_rosa/santa_rosa_rgd.png"
 Image.fromarray(image_norm).save(path_to_save)
-print('santa_rosa_rgb saved')
+print("santa_rosa_rgb saved")
 
 # ventura
 # path to data
-r_path = 'data/data_sources/ventura/RED.tif'
-g_path = 'data/data_sources/ventura/GRN.tif'
-b_path = 'data/data_sources/ventura/BLUE.tif'
+r_path = "data/data_sources/ventura/RED.tif"
+g_path = "data/data_sources/ventura/GRN.tif"
+b_path = "data/data_sources/ventura/BLUE.tif"
 
 # read channels santarosa
 with rasterio.open(r_path) as r:
@@ -52,7 +51,7 @@ with rasterio.open(b_path) as b:
     blue = b.read(1)
 
 # merge to RGB
-image = np.stack([red, green, blue], axis=-1) # H x W x 3
+image = np.stack([red, green, blue], axis=-1)  # H x W x 3
 
 # visualise if need to check
 # plt.imshow(image)
@@ -62,6 +61,6 @@ image = np.stack([red, green, blue], axis=-1) # H x W x 3
 image_norm = normalize(image)
 
 # save
-path_to_save = 'data/data_sources/ventura/ventura_rgb.png'
+path_to_save = "data/data_sources/ventura/ventura_rgb.png"
 Image.fromarray(image_norm).save(path_to_save)
-print('ventura_rgb saved')
+print("ventura_rgb saved")

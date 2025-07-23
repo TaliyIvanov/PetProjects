@@ -1,22 +1,21 @@
-import torch
-import numpy as np
-from PIL import Image
 import albumentations as A
-from albumentations.pytorch import ToTensorV2
 import hydra
+import numpy as np
+import torch
+from albumentations.pytorch import ToTensorV2
 from omegaconf import OmegaConf
+from PIL import Image
 
 # Сначала определю трансформации глобально
 # в будущем необходимо поправить, чтобы они подтягивались из конфига
 # val_transforms. На данный момент они идентичны
 
-PREDICT_TRANSFORMS = A.Compose([
-    A.Normalize(mean=[0.3527, 0.3395, 0.2912],
-                std=[0.1384, 0.1237, 0.1199]),
-    ToTensorV2()
-])
+PREDICT_TRANSFORMS = A.Compose(
+    [A.Normalize(mean=[0.3527, 0.3395, 0.2912], std=[0.1384, 0.1237, 0.1199]), ToTensorV2()]
+)
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+
 
 def load_model(model_path: str, model_config_path: str) -> torch.nn.Module:
     print(f"Loading model from {model_path} to {device}")
@@ -32,6 +31,7 @@ def load_model(model_path: str, model_config_path: str) -> torch.nn.Module:
     model.eval()
     print("Model loaded succesfully!")
     return model
+
 
 def predict_mask(model: torch.nn.Module, image: Image.Image) -> Image.Image:
     """
@@ -50,8 +50,8 @@ def predict_mask(model: torch.nn.Module, image: Image.Image) -> Image.Image:
 
     # transforms
     input_tensor = PREDICT_TRANSFORMS(image=image_np)["image"]
-    input_tensor = input_tensor.unsqueeze(0).to(device) # add batch dimension
-    
+    input_tensor = input_tensor.unsqueeze(0).to(device)  # add batch dimension
+
     with torch.no_grad():
         logits = model(input_tensor)
 
@@ -59,6 +59,6 @@ def predict_mask(model: torch.nn.Module, image: Image.Image) -> Image.Image:
     binary_mask = (preds > 0.5).squeeze().numpy().astype(np.uint8) * 255
 
     # convert numpy array to Pil Image
-    mask_image = Image.fromarray(binary_mask, mode="L") # "L" for graysacale image
+    mask_image = Image.fromarray(binary_mask, mode="L")  # "L" for graysacale image
 
     return mask_image

@@ -1,6 +1,7 @@
 import torch
 
-def compute_iou(preds: torch.Tensor, masks: torch.Tensor, threshold: float=0.5) -> float:
+
+def compute_iou(preds: torch.Tensor, masks: torch.Tensor, threshold: float = 0.5) -> float:
     # Применяем sigmoid к логитам и применяем порог
     preds = torch.sigmoid(preds)  # Применяем сигмоид
     preds = (preds > threshold).float()
@@ -10,4 +11,4 @@ def compute_iou(preds: torch.Tensor, masks: torch.Tensor, threshold: float=0.5) 
     return iou.mean()
 
 
-__all__ = ['compute_iou']
+__all__ = ["compute_iou"]

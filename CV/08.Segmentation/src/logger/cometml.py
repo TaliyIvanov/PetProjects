@@ -1,5 +1,6 @@
 from comet_ml import Experiment
 
+
 class CometLogger:
     def __init__(self, api_key: str, project_name: str, experiment_name: str = None):
         self.experiment = Experiment(api_key=api_key, project_name=project_name)

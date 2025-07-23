@@ -113,3 +113,13 @@ http://localhost:8000/docs
 http://localhost:8000/redoc
 http://localhost:9090 - (Prometheus)
 http://localhost:3000 - (Grafana)
+
+
+### Clean code with ruff
+
+ruff check . - первичная проверка
+    ruff found 99 problems. i think it will be more :D I put it in found_problems.md
+
+ruff check . --fix - fixed the founded problems
+ruff format . - форматирование кода
+ruff check . - вторичная проверка для ручного исправление

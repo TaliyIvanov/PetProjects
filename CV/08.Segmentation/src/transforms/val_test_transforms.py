@@ -8,18 +8,13 @@ Mean: tensor([0.3527, 0.3395, 0.2912])
 Std: tensor([0.1384, 0.1237, 0.1199])
 """
 
+
 def val_test_transforms(
-        mean: list = (0.3527, 0.3395, 0.2912),
-        std: list = (0.1384, 0.1237, 0.1199)
-        ):
-    
-    result = A.Compose([
-        A.Normalize(mean=mean, std=std),
-        ToTensorV2()
-        ])
+    mean: list = (0.3527, 0.3395, 0.2912), std: list = (0.1384, 0.1237, 0.1199)
+):
+    result = A.Compose([A.Normalize(mean=mean, std=std), ToTensorV2()])
 
     return result
-    
 
 
 # # transforms for validation

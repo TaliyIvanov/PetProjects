@@ -1,53 +1,51 @@
 # imports
+import os
+from glob import glob
+
+import matplotlib.pyplot as plt
+import segmentation_models_pytorch as smp
 import torch
 import torch.nn as nn
-from torch.utils.data import DataLoader
-from torch.optim.lr_scheduler import ReduceLROnPlateau
-
-from tqdm import tqdm
-import segmentation_models_pytorch as smp
-from glob import glob
-import os
 from sklearn.model_selection import train_test_split
-import matplotlib.pyplot as plt
+from torch.optim.lr_scheduler import ReduceLROnPlateau
+from torch.utils.data import DataLoader
+from tqdm import tqdm
 
 # from project files
 from src.datasets.datasets import SegmentationDataset
 from src.metrics import compute_iou
-from src.utils.utils import calculate_class_weights, visualize_predictions
-from src.transforms.val_test_transforms import val_test_transform
 from src.transforms.train_transforms import train_transform
+from src.transforms.val_test_transforms import val_test_transform
+from src.utils.utils import calculate_class_weights
+from src.utils.utils import visualize_predictions
 
 # configs
-root_dir_images = 'data/dataset/images'
-root_dir_masks = 'data/dataset/masks'
+root_dir_images = "data/dataset/images"
+root_dir_masks = "data/dataset/masks"
 
 model_type = "Linknet"  # Unet, FPN, DeepLabV3Plus, UnetPlusPlus
-encoder = 'resnet34'
-weights = 'imagenet'
+encoder = "resnet34"
+weights = "imagenet"
 num_classes = 1
 batch_size = 4
 lr = 1e-3
 EPOCHS = 100
-device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
-save_path = f'best_model_{model_type.lower()}.pth'
+save_path = f"best_model_{model_type.lower()}.pth"
 
 # Model
 ModelClass = getattr(smp, model_type)
 model = ModelClass(
-    encoder_name = encoder,
-    encoder_weights = weights,
-    in_channels = 3,
-    classes=num_classes
+    encoder_name=encoder, encoder_weights=weights, in_channels=3, classes=num_classes
 )
- 
+
 model.to(device)
 # print(model)
 
 # Data
-image_paths = sorted(glob(os.path.join(root_dir_images, '*.png')))
-mask_paths = sorted(glob(os.path.join(root_dir_masks, '*.png')))
+image_paths = sorted(glob(os.path.join(root_dir_images, "*.png")))
+mask_paths = sorted(glob(os.path.join(root_dir_masks, "*.png")))
 
 # Train/Val/test split
 # train (70%) и temp (30%)
@@ -57,7 +55,7 @@ train_imgs, temp_imgs, train_masks, temp_masks = train_test_split(
 
 # from temp val (≈20%) и test (≈10%)
 val_imgs, test_imgs, val_masks, test_masks = train_test_split(
-    temp_imgs, temp_masks, test_size=1/3, random_state=42
+    temp_imgs, temp_masks, test_size=1 / 3, random_state=42
 )
 
 # Datasets
@@ -78,12 +76,7 @@ loss_fn = nn.BCEWithLogitsLoss()
 optimizer = torch.optim.Adam(model.parameters(), lr=lr)
 metrics_fn = compute_iou
 scheduler = ReduceLROnPlateau(
-    optimizer,
-    mode='max',
-    factor=0.5,
-    patience=2,
-    verbose=True,
-    min_lr=1e-6
+    optimizer, mode="max", factor=0.5, patience=2, verbose=True, min_lr=1e-6
 )
 
 # Lists for metrics
@@ -99,7 +92,7 @@ for epoch in range(EPOCHS):
     model.train()
     train_loss = 0
 
-    pbar = tqdm(train_loader, desc=f"[Epoch {epoch+1}/{EPOCHS}] Train")
+    pbar = tqdm(train_loader, desc=f"[Epoch {epoch + 1}/{EPOCHS}] Train")
 
     for images, masks in pbar:
         images = images.to(device)
@@ -117,10 +110,9 @@ for epoch in range(EPOCHS):
 
         train_loss += loss.item()
         avg_train_loss = train_loss / len(train_loader)
-        pbar.set_postfix({'loss': avg_train_loss})
+        pbar.set_postfix({"loss": avg_train_loss})
 
-    print(f"[Epoch {epoch+1}] Train Loss: {avg_train_loss:.4f}")
-    
+    print(f"[Epoch {epoch + 1}] Train Loss: {avg_train_loss:.4f}")
 
     # validation
     model.eval()
@@ -145,7 +137,7 @@ for epoch in range(EPOCHS):
 
     avg_val_loss = val_loss / len(val_loader)
     avg_iou = total_iou / len(val_loader)
-    current_lr = optimizer.param_groups[0]['lr']
+    current_lr = optimizer.param_groups[0]["lr"]
 
     # ✅ Теперь сохраняем метрики
     train_losses.append(avg_train_loss)
@@ -153,8 +145,8 @@ for epoch in range(EPOCHS):
     val_ious.append(avg_iou)
     lrs.append(current_lr)
 
-    print(f"[Epoch {epoch+1}] Train Loss: {avg_train_loss:.4f}")
-    print(f"[Epoch {epoch+1}] Val Loss: {avg_val_loss:.4f} | IoU: {avg_iou:.4f}")
+    print(f"[Epoch {epoch + 1}] Train Loss: {avg_train_loss:.4f}")
+    print(f"[Epoch {epoch + 1}] Val Loss: {avg_val_loss:.4f} | IoU: {avg_iou:.4f}")
 
     scheduler.step(avg_iou)
 
@@ -165,7 +157,6 @@ for epoch in range(EPOCHS):
         print(f"Model saved to {save_path} (IoU improved to {avg_iou:.4f})")
 
 # graphics
-import matplotlib.pyplot as plt
 
 epochs_range = range(1, EPOCHS + 1)
 
@@ -173,27 +164,27 @@ plt.figure(figsize=(15, 5))
 
 # Loss
 plt.subplot(1, 3, 1)
-plt.plot(epochs_range, train_losses, label='Train Loss')
-plt.plot(epochs_range, val_losses, label='Val Loss')
-plt.xlabel('Epoch')
-plt.ylabel('Loss')
-plt.title('Loss Curve')
+plt.plot(epochs_range, train_losses, label="Train Loss")
+plt.plot(epochs_range, val_losses, label="Val Loss")
+plt.xlabel("Epoch")
+plt.ylabel("Loss")
+plt.title("Loss Curve")
 plt.legend()
 
 # IoU
 plt.subplot(1, 3, 2)
-plt.plot(epochs_range, val_ious, label='Val IoU', color='green')
-plt.xlabel('Epoch')
-plt.ylabel('IoU')
-plt.title('Validation IoU')
+plt.plot(epochs_range, val_ious, label="Val IoU", color="green")
+plt.xlabel("Epoch")
+plt.ylabel("IoU")
+plt.title("Validation IoU")
 plt.legend()
 
 # LR
 plt.subplot(1, 3, 3)
-plt.plot(epochs_range, lrs, label='Learning Rate', color='orange')
-plt.xlabel('Epoch')
-plt.ylabel('LR')
-plt.title('Learning Rate')
+plt.plot(epochs_range, lrs, label="Learning Rate", color="orange")
+plt.xlabel("Epoch")
+plt.ylabel("LR")
+plt.title("Learning Rate")
 plt.legend()
 
 plt.tight_layout()
