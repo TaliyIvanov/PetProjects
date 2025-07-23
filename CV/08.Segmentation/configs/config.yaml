@@ -1,0 +1,13 @@
+defaults:
+  - _self_
+  - data: dataset
+  - model: linknet
+  - train: train
+  - logger: cometml
+  - transforms: transforms
+
+seed: 42
+device: cuda
+
+model_path: ${hydra:runtime.outputs}/best_model_linknet.pth
+metrics_path: ${hydra:runtime.outputs}/metrics.json

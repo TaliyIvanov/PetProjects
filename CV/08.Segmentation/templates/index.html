@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Сегментация домов</title>
+    <style>
+        body { font-family: sans-serif; background-color: #f4f4f9; display: flex; justify-content: center; align-items: center; min-height: 100vh; margin: 0; }
+        .container { background: white; padding: 2rem; border-radius: 8px; box-shadow: 0 4px 8px rgba(0,0,0,0.1); text-align: center; max-width: 90%; width: 800px; }
+        h1 { color: #333; }
+        .upload-section { margin-bottom: 1.5rem; }
+        input[type="file"] { border: 1px solid #ccc; padding: 8px; border-radius: 4px; }
+        button { background-color: #007bff; color: white; border: none; padding: 10px 20px; border-radius: 4px; cursor: pointer; font-size: 1rem; transition: background-color 0.3s; }
+        button:hover { background-color: #0056b3; }
+        .results { display: flex; justify-content: space-around; margin-top: 2rem; flex-wrap: wrap; gap: 1rem; }
+        .image-box { border: 1px solid #ddd; padding: 10px; border-radius: 4px; }
+        .image-box h2 { font-size: 1.2rem; color: #555; margin-top: 0; }
+        .image-box img { max-width: 100%; height: auto; display: block; }
+        #spinner { display: none; border: 4px solid #f3f3f3; border-top: 4px solid #3498db; border-radius: 50%; width: 40px; height: 40px; animation: spin 2s linear infinite; margin: 20px auto; }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Распознавание домов на спутниковых снимках</h1>
+        <div class="upload-section">
+            <input type="file" id="imageInput" accept="image/png, image/jpeg">
+            <button id="predictButton">Распознать</button>
+        </div>
+        
+        <div id="spinner"></div>
+
+        <div class="results">
+            <div class="image-box" id="originalBox" style="display:none;">
+                <h2>Оригинал</h2>
+                <img id="originalImage" src="#" alt="Original Image">
+            </div>
+            <div class="image-box" id="maskBox" style="display:none;">
+                <h2>Предсказанная маска</h2>
+                <img id="maskImage" src="#" alt="Predicted Mask">
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const imageInput = document.getElementById('imageInput');
+        const predictButton = document.getElementById('predictButton');
+        const spinner = document.getElementById('spinner');
+        const originalBox = document.getElementById('originalBox');
+        const maskBox = document.getElementById('maskBox');
+        const originalImage = document.getElementById('originalImage');
+        const maskImage = document.getElementById('maskImage');
+
+        predictButton.addEventListener('click', async () => {
+            const file = imageInput.files[0];
+            if (!file) {
+                alert("Пожалуйста, выберите изображение!");
+                return;
+            }
+
+            // show original
+            originalImage.src = URL.createObjectURL(file);
+            originalBox.style.display = 'block';
+            maskBox.style.display = 'none'; // hide old mask
+
+            // show spinner
+            spinner.style.display = 'block';
+
+            const formData = new FormData();
+            formData.append('file', file);
+
+            try {
+                // change URL, if your API run on other host/port
+                const response = await fetch('/predict', {
+                    method: 'POST',
+                    body: formData
+                });
+
+                if (!response.ok) {
+                    throw new Error(`Ошибка сервера: ${response.statusText}`);
+                }
+
+                const imageBlob = await response.blob();
+                const imageUrl = URL.createObjectURL(imageBlob);
+
+                maskImage.src = imageUrl;
+                maskBox.style.display = 'block';
+
+            } catch (error) {
+                console.error("Ошибка при запросе к API:", error);
+                alert("Не удалось получить предсказание. Проверьте консоль для деталей.");
+            } finally {
+                // hide spinner
+                spinner.style.display = 'none';
+            }
+        });
+    </script>
+</body>
+</html>

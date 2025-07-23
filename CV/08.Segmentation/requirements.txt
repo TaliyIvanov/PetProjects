@@ -1,0 +1,14 @@
+fastapi==0.110.1
+uvicorn[standard]==0.29.0
+torch==2.2.2
+numpy==1.26.4
+opencv-python-headless
+albumentations==1.4.4
+pandas==2.2.2
+scikit-learn==1.4.2
+segmentation_models_pytorch
+wandb
+comet_ml
+hydra-core
+python-multipart
+prometheus-fastapi-instrumentator

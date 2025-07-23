@@ -1,0 +1,4 @@
+_target_: src.models.linknet.Linknet
+encoder_name: "resnet34"
+encoder_weights: "imagenet"
+num_classes: 1

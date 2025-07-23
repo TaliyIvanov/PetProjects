@@ -1,0 +1,66 @@
+seed: 42
+device: cuda
+model_path: ${hydra:runtime.outputs}/best_model_linknet.pth
+metrics_path: ${hydra:runtime.outputs}/metrics.json
+data:
+  root_dir_images: data/dataset/images
+  root_dir_masks: data/dataset/masks
+  test_size: 0.25
+  val_size: 0.4
+  random_state: 42
+  batch_size: 4
+  num_workers: 4
+model:
+  _target_: src.models.linknet.Linknet
+  encoder_name: resnet34
+  encoder_weights: imagenet
+  num_classes: 1
+train:
+  lr: 0.001
+  epochs: 5
+  optimizer:
+    _target_: torch.optim.Adam
+    lr: ${..lr}
+  scheduler:
+    _target_: torch.optim.lr_scheduler.ReduceLROnPlateau
+    mode: max
+    factor: 0.5
+    patience: 2
+    verbose: true
+    min_lr: 1.0e-06
+  loss_fn:
+    _target_: torch.nn.BCEWithLogitsLoss
+logger:
+  _target_: src.logger.wandb.WandBWriter
+  api_key: your_apikey
+  project_name: binary segmentation
+transforms:
+  train_transforms:
+    _target_: src.transforms.train_transforms.train_transforms
+    horizontal_flip_p: 0.5
+    vertical_flip_p: 0.5
+    random_rotate: 0.5
+    shift_limit: 0.05
+    scale_limit: 0.1
+    rotate_limit: 15
+    shift_scale_rotate: 0.5
+    rand_bright_contrast: 0.2
+    grid_distortion: 0.2
+    mean:
+    - 0.3527
+    - 0.3395
+    - 0.2912
+    std:
+    - 0.1384
+    - 0.1237
+    - 0.1199
+  val_test_transforms:
+    _target_: src.transforms.val_test_transforms.val_test_transforms
+    mean:
+    - 0.3527
+    - 0.3395
+    - 0.2912
+    std:
+    - 0.1384
+    - 0.1237
+    - 0.1199

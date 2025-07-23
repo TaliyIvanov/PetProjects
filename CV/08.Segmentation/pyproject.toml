@@ -1,0 +1,74 @@
+[tool.ruff]
+
+# python version
+target-version = "py310"
+
+# folders with python code
+src = ["src", "scripts", "preparation"]
+
+# ignores
+exclude = [
+    ".bzr",
+    ".direnv",
+    ".eggs",
+    ".git",
+    ".hg",
+    ".mypy_cache",
+    ".nox",
+    ".pants.d",
+    ".ruff_cache",
+    ".svn",
+    ".tox",
+    ".venv",
+    "__pypackages__",
+    "_build",
+    "buck-out",
+    "build",
+    "dist",
+    "node_modules",
+    "venv",
+    "data/",        # Данные
+    "outputs/",     # Выходные файлы Hydra
+    "configs/",     # Файлы конфигурации
+    "task/",
+    "results/",
+    "templates/",
+]
+
+# string length
+line-length = 99
+
+# chose rules
+# Начнем с хорошего набора по умолчанию и добавим еще несколько полезных.
+# 'F' - Pyflakes (ошибки)
+# 'E', 'W' - pycodestyle (стиль)
+# 'I' - isort (сортировка импортов)
+# 'N' - pep8-naming (правильные имена переменных)
+# 'B' - flake8-bugbear (поиск вероятных багов)
+# 'C90' - mccabe (проверка сложности функций)
+# 'UP' - pyupgrade (модернизация синтаксиса)
+
+select = ["F", "E", "W", "I", "N", "B", "C90", "UP"]
+
+# Некоторые правила могут быть слишком строгими или спорными.
+# Их можно выборочно отключить.
+# Например, B008: Не используйте вызов функции в качестве аргумента по умолчанию.
+# Иногда это бывает нужно и делается осознанно.
+
+ignore = ["B008"]
+
+# Разрешить автоматическое исправление "опасных" правок,
+# например, удаление неиспользуемых импортов. Для Ruff это безопасно.
+unsafe-fixes = true
+
+[tool.ruff.format]
+# Конфигурация для форматера кода (аналог Black)
+quote-style = "double"  # Использовать двойные кавычки вместо одинарных
+indent-style = "space"  # Использовать пробелы для отступов
+skip-magic-trailing-comma = false # Добавлять висячую запятую
+line-ending = "auto" # Автоматическое определение конца строки
+
+[tool.ruff.lint.isort]
+# Объединяет импорты из одного модуля в одну строку
+# from collections import Counter, defaultdict
+force-single-line = true
