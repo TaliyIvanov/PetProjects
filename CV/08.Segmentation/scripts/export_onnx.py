@@ -1,10 +1,15 @@
+# python3 -m scripts.export_onnx
+
 import hydra
 from omegaconf import DictConfig
 import torch
 import os
+import onnx
+import onnxruntime as ort
+import numpy as np
 
-@hydra.main(config_name="../configs", config_name="config", version_base=None)
-def export_to_onnx(cfg: DictConfig) --> None:
+@hydra.main(config_path="../configs", config_name="config", version_base=None)
+def export_to_onnx(cfg: DictConfig) -> None:
     """
     Load model and export it in ONNX.
     """
@@ -12,7 +17,7 @@ def export_to_onnx(cfg: DictConfig) --> None:
 
     # 1. Create the model
     print(f"Create the model copy: {cfg.model._target_}")
-    model = hydra.instantiate(cfg.model)
+    model = hydra.utils.instantiate(cfg.model)
 
     # 2. Load weights
     weights_path = cfg.onnx_export.weights_path
@@ -29,9 +34,9 @@ def export_to_onnx(cfg: DictConfig) --> None:
     # 3. Dummy input
     batch_size = cfg.onnx_export.batch_size
     height = cfg.onnx_export.height
-    width = cfg.onnx_export.height
+    width = cfg.onnx_export.width
 
-    channels = model.model.encoder.in_channels
+    channels = model.in_channels
 
     dummy_input =  torch.randn(batch_size, channels, height, width, requires_grad=False)
     print(f"Size of input tansor to trass..: {dummy_input.shape}")
@@ -50,7 +55,7 @@ def export_to_onnx(cfg: DictConfig) --> None:
         dummy_input,
         onnx_path,
         export_params=True,
-        opset_version=cfg.onnx_eport.opset_version,
+        opset_version=cfg.onnx_export.opset_version,
         do_constant_folding=True,
         input_names=["input"],
         output_names=["output"],
@@ -63,10 +68,33 @@ def export_to_onnx(cfg: DictConfig) --> None:
     print(f"Export finished")
 
     # 5. Check
-    print(f"Checl the model")
-    onnx_model = torch.onnx.load(onnx_path)
-    torch.onnx.check_model(onnx_model)
-    print(f"ONNX model saved and finished the check correct: {onnx_path}")
+    print(f"Check the model")
+    onnx_model = onnx.load(onnx_path)
+    onnx.checker.check_model(onnx_model)
+    
+    print("ONNX model structure is valid.")
+
+    # (Опционально, но КРАЙНЕ РЕКОМЕНДУЕТСЯ)
+    # Проверяем, что выходные данные модели ONNX совпадают с PyTorch
+    print("Comparing ONNX Runtime and PyTorch results...")
+
+    # Получаем выход PyTorch
+    model.eval()
+    with torch.no_grad():
+        torch_out = model(dummy_input)
+
+    # Получаем выход ONNX Runtime
+    ort_session = ort.InferenceSession(onnx_path)
+    input_name = ort_session.get_inputs()[0].name
+    ort_inputs = {input_name: dummy_input.cpu().numpy()}
+    ort_outs = ort_session.run(None, ort_inputs)
+
+    # Сравниваем результаты
+    # Используем np.allclose для сравнения чисел с плавающей точкой
+    np.testing.assert_allclose(torch_out.cpu().numpy(), ort_outs[0], rtol=1e-03, atol=1e-05)
+
+    print(f"ONNX model has been tested with ONNX Runtime, and the result is consistent with PyTorch.")
+    print(f"ONNX model saved and checked successfully: {onnx_path}")
 
 if __name__ == "__main__":
     export_to_onnx()

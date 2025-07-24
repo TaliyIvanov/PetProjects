@@ -11,3 +11,11 @@ device: cuda
 
 model_path: ${hydra:runtime.outputs}/best_model_linknet.pth
 metrics_path: ${hydra:runtime.outputs}/metrics.json
+
+# export to ONNX
+onnx_export:
+  weights_path: "best_model_linknet.pth"
+  batch_size: 1
+  height: 512
+  width: 512
+  opset_version: 13
